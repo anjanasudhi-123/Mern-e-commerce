@@ -1,0 +1,523 @@
+h1 {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 40px;
+    
+}
+header{
+    margin-top:-10px;
+}
+header h3{
+    color: gray;
+    padding: 15px;
+    margin-left: 85px;
+}
+
+h2,.liked1 h2 {
+    font-size: small;
+    text-align: start;
+    margin-top: 50px;
+    margin-left: 30px;
+    font-size: medium;
+}
+
+h4 {
+    font-size: medium;
+}
+
+.top {
+    border-bottom: 1px solid brown;
+    background-color: white;
+    margin-top: 2px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
+}
+
+p {
+    font-size: smaller;
+}
+
+.topimage img {
+    width: 100%;
+    max-height: 550px;
+    object-fit: cover;
+    margin-top: 6px;
+
+}
+
+.top-button a {
+    text-decoration: none;
+    color: #fff;
+    padding: 10px 20px;
+    background-color: black;
+    margin-top: 0px;
+}
+
+.item{
+    width: 240px;
+    transform: 0.3s;
+    display: inline-block;
+    margin-bottom: 100px;
+    margin-right: 5%;
+    padding: 0%;
+    margin-top: 2%;
+    box-shadow: 0px 9px 7px grey;
+}  
+.search {
+    position: relative;
+    display: flex;
+    padding: 15px;
+    margin-left:35%; 
+}
+.search input {
+    width: 50%;
+}
+
+img {
+    width: 100px;
+    height: 100%;
+}
+
+h6 {
+    margin-top: 50px;
+    text-align: center;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+.brand img {
+    width: 150px;
+}
+
+.item-1 {
+    text-align: left;
+    font-size: small;
+    margin-left: 5px;
+    margin-top: 20px;
+}
+
+.item-1 h2 {
+    margin-top: -10px;
+    font-size: medium;
+}
+
+.item img {
+    margin-top: 20px;
+    width: 230px;
+}
+
+.logo {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.logo img {
+    width: 40px;
+    height: 20px;
+    margin-bottom: -1px;
+    margin-top: 2px;
+}
+
+.reg,
+.login {
+    margin-top: 20px;
+}
+
+.item-1 button {
+    display: inline-block;
+    width: 30px;
+}
+
+.payment-section {
+    width: 30%;
+    margin-top: 70px;
+    height: 10px;
+    padding: 20px;
+    text-align: end;
+}
+
+.row1 img {
+    margin-top:10px;
+    display: inline-block;
+    height: 180px;
+}
+
+.containers {
+    border: 1px black solid;
+    box-shadow: 0px 9px 7px grey;
+    width: 450px;
+    height: 350px;
+    margin-top: 50px;
+    border-radius: 5px;
+    padding: 30px;
+    margin-left: 30%;
+}
+
+.containers button {
+    background-color: lightblue;
+}
+
+.image-container {
+    width: 250px;
+    display: inline-block;
+    margin-right: 100px;
+}
+
+.images img {
+    width: 280px;
+    margin-top: 80px;
+}
+
+
+
+.liked {
+    width: 250px;
+    transform: 0.3s;
+    display: inline-block;
+    margin-bottom: 100px;
+    margin-right: 10%;
+    padding: 0%;
+    margin-top: 2%;
+    box-shadow: 0px 9px 7px grey;
+
+} 
+
+ .liked img {
+    margin-top: 20px;
+    width: 200px;
+} 
+
+.likedbutton {
+    display: inline-block;
+
+}
+
+.liked1 p {
+    text-align: left;
+    font-size: medium;
+    margin-left: 5px;
+    margin-top: 20px;
+} 
+
+.cart-item-count ,.like-item-count{
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 3px 6px;
+    font-size: 10px;
+    top: -2px;
+    right: -1px;
+    position: absolute;
+}
+
+.cart-icon-container,.like-icon-container {
+    position: relative;
+
+}
+
+
+
+.login p {
+    margin-top: 100px
+}
+
+form {
+    max-width: 500px;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.form {
+    margin-top: 100px;
+}
+
+label {
+    font-weight: bold;
+}
+
+
+input[type="text"],
+input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0 15px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+input[type="file"] {
+    padding: 5px;
+}
+
+
+button[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: green;
+}
+
+.addprotop {
+    background-color: whitesmoke;
+    color: gray;
+    padding: 10px;
+}
+
+.addprotop h1 {
+    margin: 0;
+}
+
+.addprotop a {
+    color: black;
+    text-decoration: none;
+    margin-right: 10px;
+}
+
+.addprotop a:hover {
+    text-decoration: underline;
+}
+
+.pritem {
+    width: 200px;
+    transform: 0.3s;
+    display: inline-block;
+    margin-bottom: 100px;
+    margin-right: 10%;
+    padding: 0%;
+    margin-top: 5%;
+    box-shadow: 0px 9px 7px grey;
+}
+
+.forms form {
+    background-color: rgb(255, 255, 255);
+    width: 250px;
+    margin-top: 20px;
+}
+
+.user p {
+    font-size: medium;
+    display: inline-block;
+    width: 250px;
+    margin-top: 10px
+}
+.not-yet{
+    margin-top:50px;
+}
+table{
+    margin-top: 50px;
+}
+
+
+.item {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.item-details {
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    display: none;
+    z-index: 1;
+}
+
+.item:hover .item-details {
+    display: block;
+}
+
+.footer {
+    color: #ffffff;
+    margin-top: 200px;
+}
+
+.footer h5{
+    margin-bottom: 1rem;
+    font-size: smaller;}
+
+.footer p,
+.footer ul {
+    margin-bottom: 0;
+}
+
+.footer ul {
+    padding-left: 0;
+    list-style: none;
+}
+
+.footer ul li {
+    margin-bottom: 10px;
+}
+
+.footer ul li a {
+    text-decoration: none;
+}
+
+.footer ul li a:hover {
+    text-decoration: underline;
+}
+.about-us-content img{
+  width:1200px;
+  height: 500px;
+  
+  
+}
+.about-us-container {
+    display: flex;
+    height: 100vh;
+    
+}
+
+.about-us-content {
+    max-width: 800px; 
+    padding: 20px;
+    text-align: center;
+}
+
+.about-us-content img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+    margin-top: 2px;
+}
+
+.text-container {
+    margin-top: 20px;
+}
+.about-us-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .about-us-content {
+    text-align: center;
+    margin-bottom: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .top-categories-container {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .top-categories-heading {
+    margin-bottom: 1px;
+    font-family:initial
+  }
+  
+  .images-container {
+    display: flex;
+    justify-content: center;
+    width: 100px;
+    height: 100px;
+
+  }
+  
+  .images-container img {
+    margin: 0 10px;
+  }
+  .luxehaven-heading {
+    font-size: 32px;
+    font-weight: bold;
+  }
+
+  .cc{
+    margin-top:30px;
+  }
+  .del h1{
+    font-size:large;
+    text-align: left;
+}
+.del {
+    padding: 20px;
+    max-width: 600px;
+    margin-left:10px;
+    margin-top:10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color:lightgrey;
+    
+  }
+  
+  .deli {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .delform, .delform2 {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  
+  .delform input, .delform2 input {
+    flex: 1 1 45%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .bttn {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  button {
+    padding: 10px 20px;
+    background-color:darkgrey;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color:cadetblue;
+  }
+  .summary h1{
+    font-size:large;
+    text-align: left;
+    margin-top:20px;
+  }
+  .pay{
+    padding: 20px;
+    max-width: 600px;
+    margin-left:10px;
+    margin-top:10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  }
+  .pay h1{
+    text-align: center;
+    font-size: larger;
+
+  } 
+  .payment-options label {
+    display: inline-block;
+    margin: 0 10px;
+    cursor: pointer;
+  }
+  
