@@ -127,7 +127,7 @@ function Productmanage() {
                         <p>₹{item.price}</p>
                     </div>
                     <button onClick={() => editItem(item)}>Edit</button>
-                    <button onClick={() => deleteItem(item.id)}>Delete</button>
+                    <button onClick={() => deleteItem(item._id)}>Delete</button>
                 </div>
             ))}
         </header>

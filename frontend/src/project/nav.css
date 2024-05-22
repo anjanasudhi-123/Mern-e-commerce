@@ -453,7 +453,7 @@ table{
     border: 1px solid #ccc;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    background-color:lightgrey;
+
     
   }
   
@@ -485,7 +485,7 @@ table{
   
   button {
     padding: 10px 20px;
-    background-color:darkgrey;
+    background-color:lightslategray;
     color: white;
     border: none;
     border-radius: 4px;
@@ -493,7 +493,7 @@ table{
   }
   
   button:hover {
-    background-color:cadetblue;
+    background-color:black;
   }
   .summary h1{
     font-size:large;
@@ -503,21 +503,14 @@ table{
   .pay{
     padding: 20px;
     max-width: 600px;
-    margin-left:10px;
     margin-top:10px;
-    border: 1px solid #ccc;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
   }
-  .pay h1{
-    text-align: center;
-    font-size: larger;
-
-  } 
-  .payment-options label {
-    display: inline-block;
-    margin: 0 10px;
-    cursor: pointer;
-  }
+ 
+ .paybtn{
+    margin-top: 50px;
+ }
   
+  
+ 

@@ -1,13 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Table, Button } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { Mycontext } from "./Newcont";
 import Heading from './heading';
 
 function Pcart() {
-  const { productData, cart, setCart } = useContext(Mycontext);
+  const {productData, cart, setCart } = useContext(Mycontext);
   const navigate = useNavigate();
+  const location=useLocation()
   const [cartItemCount, setCartItemCount] = useState(0);
   const userEmail = localStorage.getItem("userEmail");
 
@@ -92,6 +93,13 @@ function Pcart() {
   const products = productData.filter((data) => cartIds.includes(data._id.toString()));
   console.log("pr", products);
 
+
+  const handlebuy = (product) => {
+    navigate('/buynow', { state: { ...location.state, product } });
+  };
+  
+
+
   return (
     <header>
       <Heading />
@@ -128,7 +136,7 @@ function Pcart() {
                     <td>₹{item.price * (item.quantity || 1)}</td>
                     <td>
                       <Button variant="outline-dark" size="sm" onClick={() => removeItem(item._id)}>Remove</Button>
-                      <Button variant="outline-success" size="sm" className="ml-2" onClick={() => navigate(`/buynow`)}>Place Order</Button>
+                      <Button variant="outline-success" size="sm" className="ml-2" onClick={()=>handlebuy(item)}>Place Order</Button>
                     </td>
                   </tr>
                 ))}
