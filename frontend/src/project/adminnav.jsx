@@ -18,7 +18,7 @@ function Adminnav() {
       <Link to={"/addproduct"}>Add product</Link>
       <Link to={"/productmanage"}>Product Manage</Link>
       <Link to={"/usermanage"}>User Manage</Link>
-      <button onClick={handleLogout} className="btn btn-danger">Logout</button>
+      <button onClick={handleLogout} className="btn btn-outline-danger">Logout</button>
     </div>
     </header>
   )

@@ -84,7 +84,7 @@ export default function Buynow() {
                 <td>{product.name}</td>
                 <td>{product.category}</td>
                 <td>{product.quantity}</td>
-                <td>{product.price}</td>
+                <td>₹{product.price * (product.quantity || 1)}</td>
               </tr>)
               }
             </tbody>

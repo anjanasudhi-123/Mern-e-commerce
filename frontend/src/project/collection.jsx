@@ -17,7 +17,7 @@ import { useFetchLike } from './usefetchLike';
 function Navbar(props) {
     const { Idatas, setIdatas, likeitem, setLikeitem, addcart, setaddcart, loggeduser, setloggeduser, productData, setProductData, } = useContext(Mycontext)
     
-    const [filtereditems, setfiltereditems] = useState(Idatas)
+    const [filtereditems, setfiltereditems] = useState(productData)
     const [searchitems, setsearchitems] = useState('')
     const [userloggedin, setuserloggedin] = useState(false);
     const [usercartin, setcartin] = useState(false);
@@ -29,6 +29,7 @@ function Navbar(props) {
 
     const { like, setLike } = useFetchLike(userEmail);
     const { cart, setCart } = useFetchCart(userEmail);
+
 
     useEffect(() => {
         setCartItemCount(cart.length);
@@ -54,8 +55,7 @@ function Navbar(props) {
                     quantity: 1
                 };
                 const response = await axios.post(`http://localhost:4400/api/user/like`, requestData);
-                // console.log("likeres", response.data.user.like);
-                // setLike(response.data.user.like); 
+                setLike([...like, { id: item._id, quantity: 1 }]);
                 alert("product liked!");
             } catch (error) {
                 console.log(error);
@@ -80,8 +80,7 @@ function Navbar(props) {
                     quantity: 1
                 };
                 const response = await axios.post(`http://localhost:4400/api/user/addtocart`, requestData);
-                // setCart(response.data.user.cart); 
-                console.log("cartres", response.data.user.cart);
+                setCart([...cart, { id: item._id, quantity: 1 }]);
                 alert("Product added to cart successfully!");
             } catch (error) {
                 console.log(error);
@@ -95,7 +94,7 @@ function Navbar(props) {
     function handleitemsearch(e) {
         const query = e.target.value
         setsearchitems(query)
-        const filtered = filtereditems.filter((user) => {
+        const filtered = productData.filter((user) => {
             const { name, category, description } = user
             console.log('Name:', name);
             console.log('Category:', category);
@@ -122,8 +121,8 @@ function Navbar(props) {
             </div>
             <>
                 {
-                    productData.map((ite) => (
-                        <div className='item'>
+                    filtereditems.map((ite) => (
+                        <div className='item' key={ite._id}>
                             <img src={ite.image} alt="img" width="400px" height="300px" /><br></br>
                             <div className='item-1'>
                                 <h2>{ite.name}</h2>

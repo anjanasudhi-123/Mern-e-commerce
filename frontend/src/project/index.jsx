@@ -32,19 +32,19 @@ function Frontpage() {
                <div className='images'>
                     <div className="image-container">
                          <Link to="/handbag">
-                              <img src="https://images-static.nykaa.com/uploads/d88abb25-27ba-4e7c-9df7-2d17bd05b90d.jpg?tr=w-240,cm-pad_resize" alt="Description 2" />
+                              <img src="https://images.pexels.com/photos/3689165/pexels-photo-3689165.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Description 2" />
                          </Link>
                          <p>HAND BAGS</p>
                     </div>
                     <div className="image-container">
                          <Link to="/footwear">
-                              <img src="https://images-static.nykaa.com/uploads/7aa678a4-e50d-4fd2-ba0c-cf24018f8af3.jpg?tr=w-240,cm-pad_resize" alt="Description 3" />
+                              <img src="https://images.pexels.com/photos/4971235/pexels-photo-4971235.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Description 3" />
                          </Link>
                          <p>FOOTWEARS</p>
                     </div>
                     <div className="image-container">
                          <Link to="/outwear">
-                              <img src="https://adn-static1.nykaa.com/nykdesignstudio-images/pub/media/catalog/product/9/3/tr:w-250,/9304ae15452775102604_1.jpg?rnd=20200526195200" alt="Description 3" />
+                              <img src="https://images.pexels.com/photos/11428514/pexels-photo-11428514.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load" alt="Description 3" />
                          </Link>
                          <p>COATS & OUTWEAR</p>
                     </div>

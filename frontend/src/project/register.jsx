@@ -64,14 +64,13 @@ function Registerpage() {
         
         <div className="containers">
             <div className="reg">
-                <h1>Register </h1><br></br>
+                <h1>Register  </h1><br></br>
                 <input
                     type="email"
                     placeholder="Enter email here"
                     value={inputemail}
                     onChange={(e) => setinputemail(e.target.value)}
                 />
-
                 <br></br>
                 <br></br>
                 <input
@@ -90,6 +89,7 @@ function Registerpage() {
                 </p>
             </div>
         </div>
+        
     );
 }
 

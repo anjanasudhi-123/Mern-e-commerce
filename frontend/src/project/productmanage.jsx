@@ -43,6 +43,7 @@ function Productmanage() {
         });
         setEditItemId(item._id);
     }
+
     function saveEditedItem(e) {
         e.preventDefault();
         alert("Updated successfully");
@@ -72,12 +73,12 @@ function Productmanage() {
             .then(response => {
                 console.log(response.data);
                 fetchProducts(); 
+                alert('Deleted successfully !')
             })
             .catch(error => {
                 console.error('Error deleting product:', error);
             });
     }
-    
 
     function clearFormData() {
         setFormData({
@@ -88,32 +89,23 @@ function Productmanage() {
             productDescription: '',
             productPrice: ''
         });
+        setEditItemId(null);
     }
 
     return (
         <header>
             <Adminnav />
-            <div className='forms'>
-                <form onSubmit={saveEditedItem}>
-                    <label htmlFor="productId">ID:</label>
-                    <input type="text" id="productId" value={formData.productId} onChange={(e) => setFormData({ ...formData, productId: e.target.value })} required />
-
-                    <label htmlFor="productName">Name:</label>
-                    <input type="text" id="productName" value={formData.productName} onChange={(e) => setFormData({ ...formData, productName: e.target.value })} required />
-
-                    <label htmlFor="productCategory">Category:</label>
-                    <input type="text" id="productCategory" value={formData.productCategory} onChange={(e) => setFormData({ ...formData, productCategory: e.target.value })} required />
-
-                    <label htmlFor="productDescription">Description:</label>
-                    <input type="text" id="productDescription" value={formData.productDescription} onChange={(e) => setFormData({ ...formData, productDescription: e.target.value })} required />
-
-                    <label htmlFor="productPrice">Price:</label>
-                    <input type="text" id="productPrice" value={formData.productPrice} onChange={(e) => setFormData({ ...formData, productPrice: e.target.value })} required />
-
-                    <label htmlFor="productImage">Image:</label>
-                    <input type="text" id="productImage" value={formData.productImage} onChange={(e) => setFormData({ ...formData, productImage: e.target.value })} required /><br />
-
-                    <button type="submit">{editItemId ? 'Save' : 'Submit'}</button>
+            <div className='deli'>
+                <form className='delform' onSubmit={saveEditedItem}>
+                    <input type="text" id="productId"  placeholder="productId" value={formData.productId} onChange={(e) => setFormData({ ...formData, productId: e.target.value })} required />
+                    <input type="text" id="productName"   placeholder="productName" value={formData.productName} onChange={(e) => setFormData({ ...formData, productName: e.target.value })} required />
+                    <input type="text" id="productCategory"  placeholder="productCategory"  value={formData.productCategory} onChange={(e) => setFormData({ ...formData, productCategory: e.target.value })} required />
+                    <input type="text" id="productDescription"  placeholder="productDescription" value={formData.productDescription} onChange={(e) => setFormData({ ...formData, productDescription: e.target.value })} required />
+                    <input type="text" id="productPrice"  placeholder="productPrice"  value={formData.productPrice} onChange={(e) => setFormData({ ...formData, productPrice: e.target.value })} required />
+                    <input type="text" id="productImage"  placeholder="productImage"  value={formData.productImage} onChange={(e) => setFormData({ ...formData, productImage: e.target.value })} required /><br />
+                    <div className='bttn'>
+                        <button type="submit">{editItemId ? 'Save' : 'Submit'}</button>
+                    </div>
                 </form>
             </div>
 
@@ -126,8 +118,10 @@ function Productmanage() {
                         <p>{item.description}</p>
                         <p>₹{item.price}</p>
                     </div>
-                    <button onClick={() => editItem(item)}>Edit</button>
-                    <button onClick={() => deleteItem(item._id)}>Delete</button>
+                    <div className='probtn'>
+                    <button className='btn btn-light' onClick={() => editItem(item)}>Edit</button>
+                    <button className='btn btn-light' onClick={() => deleteItem(item._id)}>Delete</button>
+                </div>
                 </div>
             ))}
         </header>

@@ -12,6 +12,7 @@ import cartin from './svg/cart-arrow-down-solid.svg'
 import Heading from './heading';
 import axios from 'axios';
 import { useFetchCart } from './useFetchCart';
+import { useFetchLike } from './usefetchLike';
 
 
 
@@ -30,8 +31,10 @@ function Navbar(props) {
     const userEmail = localStorage.getItem("userEmail")
     const authToken = localStorage.getItem("authToken");
 
+    const { like, setLike } = useFetchLike(userEmail);
+    const { cart, setCart } = useFetchCart(userEmail);
 
-    const cart = useFetchCart(userEmail).cart
+
     useEffect(() => {
         setCartItemCount(cart.length);
     }, [cart]);
@@ -42,35 +45,32 @@ function Navbar(props) {
 
 
 
-    function Likebtn(item) {
-        const authToken = localStorage.getItem("authToken");
+    async function Likebtn(item) {
         if (authToken) {
-            if (likeitem.includes(item)) {
-                setLikeitem(likeitem.filter(likedItem => likedItem !== item));
-            } else {
-                setLikeitem([...likeitem, item]);
+            const Isitemlike = like.some(likeItem => likeItem.id === item._id);
+            if (Isitemlike) {
+                alert("already exist!");
+                return;
             }
-            axios.post('http://localhost:4400/api/user/like', { authToken, productId: item.id })
-                .then(response => {
-                    console.log(response.data);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
+            try {
+                const requestData = {
+                    email: userEmail,
+                    id: item._id,
+                    quantity: 1
+                };
+                const response = await axios.post(`http://localhost:4400/api/user/like`, requestData);
+                setLike([...like, { id: item._id, quantity: 1 }]);
+                alert("product liked!");
+            } catch (error) {
+                console.log(error);
+            }
         } else {
-            alert('Please log in to like/unlike the item!');
-            navigate('/login');
-            return;
+            alert("Please log in to like/unlike items !");
+            navigate("/login");
         }
     }
-    console.log(likeitem + "like")
-
-
-
-
 
     async function cartbtn(item) {
-        const authToken = localStorage.getItem("authToken");
         if (authToken) {
             const isItemInCart = cart.some(cartItem => cartItem.id === item._id);
             if (isItemInCart) {
@@ -84,12 +84,10 @@ function Navbar(props) {
                     quantity: 1
                 };
                 const response = await axios.post(`http://localhost:4400/api/user/addtocart`, requestData);
-                // setCart(response.data.user.cart);
-                console.log("cartres", response.data.user.cart);
+                setCart([...cart, { id: item._id, quantity: 1 }]);
                 alert("Product added to cart successfully!");
             } catch (error) {
                 console.log(error);
-                // Handle error
             }
         } else {
             alert("Please log in to add/remove items from the cart!");
@@ -138,10 +136,14 @@ function Navbar(props) {
                             </div>
                             <div className='item-1 button'>
                                 <button onClick={() => Likebtn(ite)} style={{ border: "none", background: "transparent" }}>
-                                    {likeitem.includes(ite) ? <img src={likeheart} alt='like' style={{ width: '20px', height: '20px' }} /> : <img src={hearticon} alt='' style={{ width: '20px', height: '20px' }} />}
+                                    {like.find(likeItem => likeItem.id === ite._id) ?
+                                        <img src={likeheart} alt='like' style={{ width: '20px', height: '20px' }} /> :
+                                        <img src={hearticon} alt='' style={{ width: '20px', height: '20px' }} />}
                                 </button>
                                 <button onClick={() => cartbtn(ite)} style={{ border: "none", background: "transparent" }}>
-                                    {cart.includes(ite) ? <img src={carticon} alt='cart' style={{ width: '20px', height: '20px' }} /> : <img src={cartin} alt='' style={{ width: '20px', height: '20px' }} />}
+                                    {cart.some(cartItem => cartItem.id === ite._id) ?
+                                        <img src={carticon} alt='cart' style={{ width: '20px', height: '20px' }} /> :
+                                        <img src={cartin} alt='' style={{ width: '20px', height: '20px' }} />}
                                 </button>
                             </div>
                         </div>

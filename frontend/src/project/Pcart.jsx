@@ -1,14 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Table, Button } from 'react-bootstrap';
-import { useNavigate,useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { Mycontext } from "./Newcont";
 import Heading from './heading';
 
 function Pcart() {
-  const {productData, cart, setCart } = useContext(Mycontext);
+  const { productData, cart, setCart } = useContext(Mycontext);
   const navigate = useNavigate();
-  const location=useLocation()
+  const location = useLocation();
   const [cartItemCount, setCartItemCount] = useState(0);
   const userEmail = localStorage.getItem("userEmail");
 
@@ -85,20 +85,29 @@ function Pcart() {
     }
   };
 
-  const calculateTotal = () => {
-    return cart.reduce((total, item) => total + (item.price || 0) * (item.quantity || 1), 0);
-  };
+
 
   const cartIds = cart.map((cartItem) => cartItem.id);
-  const products = productData.filter((data) => cartIds.includes(data._id.toString()));
-  console.log("pr", products);
+  const products = productData.filter((data) => cartIds.includes(data._id.toString())).map(product => {
+    const cartItem = cart.find(item => item.id === product._id);
+    if (cartItem) {
+        return { ...product, quantity: cartItem.quantity, price: cartItem.price };
+    } else {
+        return null; // Handle cases where cart item is not found
+    }
+}).filter(Boolean); // Remove null items from the array
 
+
+
+const calculateTotal = () => {
+  return products.reduce((total, item) => total + (item.price || 0) * (item.quantity || 1), 0);
+};
+
+  console.log("pr", products);
 
   const handlebuy = (product) => {
     navigate('/buynow', { state: { ...location.state, product } });
   };
-  
-
 
   return (
     <header>
@@ -136,17 +145,16 @@ function Pcart() {
                     <td>₹{item.price * (item.quantity || 1)}</td>
                     <td>
                       <Button variant="outline-dark" size="sm" onClick={() => removeItem(item._id)}>Remove</Button>
-                      <Button variant="outline-success" size="sm" className="ml-2" onClick={()=>handlebuy(item)}>Place Order</Button>
+                      <Button variant="outline-success" size="sm" className="ml-2" onClick={() => handlebuy(item)}>Place Order</Button>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </Table>
             <div className="payment-section text-right">
-      <h5>Total Amount: ₹{calculateTotal()}</h5>
-      <Button variant="primary" onClick={() => navigate(`/Payment`, { cart: cart })}>  Proceed to Payment</Button>
-
-    </div>
+              <h5>Total Amount: ₹{calculateTotal()}</h5>
+              <Button variant="primary" onClick={() => navigate(`/Payment`, { state: { cart: cart } })}>Proceed to Payment</Button>
+            </div>
           </>
         )}
       </div>
