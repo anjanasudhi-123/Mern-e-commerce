@@ -43,11 +43,7 @@ function Navbar(props) {
     const nav = useNavigate()
     console.log("data", Idatas)
 
-
-
-
-
-    async function Likebtn(item) {
+   async function Likebtn(item) {
         if (authToken) {
             const Isitemlike = like.some(likeItem => likeItem.id === item._id);
             if (Isitemlike) {
@@ -114,11 +110,8 @@ function Navbar(props) {
                 name.toLowerCase().includes(query.toLowerCase()) ||
                 category.toLowerCase().includes(query.toLowerCase()) ||
                 description.toLowerCase().includes(query.toLowerCase())
-
             )
         })
-
-
         setfiltereditems(filtered)
     }
 
@@ -126,9 +119,7 @@ function Navbar(props) {
     return (
         <header>
             <Heading />
-
             <>
-
                 {productData.filter(ite => ite.category == 'HANDBAG')
                     .map((ite, id) => (
 

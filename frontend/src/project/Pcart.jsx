@@ -25,7 +25,11 @@ function Pcart() {
   const fetchCart = async () => {
     try {
       const response = await axios.post("http://localhost:4400/api/user/cartdata", { email: userEmail });
-      setCart(response.data.cart);
+      const cartData = response.data.cart.map(item => ({
+        ...item,
+        quantity: item.quantity || 1, // Ensure quantity is at least 1
+      }));
+      setCart(cartData);
       console.log("fetch cart data", response.data);
     } catch (error) {
       console.log("Error fetching cart data:", error);
@@ -72,7 +76,7 @@ function Pcart() {
   const addQty = async (id) => {
     const item = cart.find((item) => item.id === id);
     if (item) {
-      const newQuantity = (item.quantity || 1) + 1;
+      const newQuantity = item.quantity + 1;
       await updateCartQuantity(id, newQuantity);
     }
   };
@@ -85,23 +89,22 @@ function Pcart() {
     }
   };
 
-
-
   const cartIds = cart.map((cartItem) => cartItem.id);
-  const products = productData.filter((data) => cartIds.includes(data._id.toString())).map(product => {
-    const cartItem = cart.find(item => item.id === product._id);
-    if (cartItem) {
-        return { ...product, quantity: cartItem.quantity, price: cartItem.price };
-    } else {
-        return null; // Handle cases where cart item is not found
-    }
-}).filter(Boolean); // Remove null items from the array
+  const products = productData
+    .filter((data) => cartIds.includes(data._id.toString()))
+    .map((product) => {
+      const cartItem = cart.find((item) => item.id === product._id);
+      if (cartItem) {
+        return { ...product, quantity: cartItem.quantity };
+      } else {
+        return null;
+      }
+    })
+    .filter(Boolean);
 
-
-
-const calculateTotal = () => {
-  return products.reduce((total, item) => total + (item.price || 0) * (item.quantity || 1), 0);
-};
+  const calculateTotal = () => {
+    return products.reduce((total, item) => total + item.price * item.quantity, 0);
+  };
 
   console.log("pr", products);
 
@@ -125,7 +128,8 @@ const calculateTotal = () => {
                   <th>Category</th>
                   <th>Price</th>
                   <th>Quantity</th>
-                  <th>Total</th>
+                  <th>Subtotal</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -142,7 +146,7 @@ const calculateTotal = () => {
                       <span style={{ margin: '0 7px' }}>{item.quantity}</span>
                       <Button variant="light" size="sm" onClick={() => addQty(item._id)}>+</Button>
                     </td>
-                    <td>₹{item.price * (item.quantity || 1)}</td>
+                    <td>₹{item.price * item.quantity}</td>
                     <td>
                       <Button variant="outline-dark" size="sm" onClick={() => removeItem(item._id)}>Remove</Button>
                       <Button variant="outline-success" size="sm" className="ml-2" onClick={() => handlebuy(item)}>Place Order</Button>
@@ -153,7 +157,7 @@ const calculateTotal = () => {
             </Table>
             <div className="payment-section text-right">
               <h5>Total Amount: ₹{calculateTotal()}</h5>
-              <Button variant="primary" onClick={() => navigate(`/Payment`, { state: { cart: cart } })}>Proceed to Payment</Button>
+              <Button variant="primary" onClick={() => navigate('/Payment', { state: { cart: cart } })}>Proceed to Payment</Button>
             </div>
           </>
         )}
