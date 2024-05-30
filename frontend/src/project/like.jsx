@@ -39,6 +39,7 @@ const {like,setLike}=useFetchLike(userEmail)
 
 
 
+
   const fetchLike = async () => {
     try {
       const response = await axios.post("http://localhost:4400/api/user/likedata", {email:userEmail})
@@ -127,12 +128,11 @@ console.log("pro",products,likeIds)
                   <p>₹{dat.price}</p>
                 </div>
                 <div className="likebutton">
-                  <button onClick={() => cartbtn(dat)} style={{ border: "none", background: "transparent" }}>
-                    {
-                      cart.includes(dat) ? <img src={carticon} alt='cart' style={{ width: '20px', height: '20px' }} /> : <img src={cartin} alt='' style={{ width: '20px', height: '20px' }} />
-                    }
-
-                  </button>
+                <button onClick={() => cartbtn(dat)} style={{ border: "none", background: "transparent" }}>
+                                    {cart.some(cartItem => cartItem.id === dat._id) ?
+                                        <img src={carticon} alt='cart' style={{ width: '20px', height: '20px' }} /> :
+                                        <img src={cartin} alt='' style={{ width: '20px', height: '20px' }} />}
+                                </button>
                   <button onClick={() => unlikeBtn(dat._id)} style={{ border: "none", background: "transparent" }}>
                     <img src={likeheart} alt="heart" style={{ width: '20px', height: '20px' }} />
                   </button>

@@ -80,6 +80,7 @@ function Pcart() {
       await updateCartQuantity(id, newQuantity);
     }
   };
+  
 
   const removeQty = async (id) => {
     const item = cart.find((item) => item.id === id);

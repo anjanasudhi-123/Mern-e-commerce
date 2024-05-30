@@ -6,7 +6,7 @@ import Adminnav from './adminnav';
 import axios from 'axios';
 
 function Productmanage() {
-    const { Idatas, setIdatas } = useContext(Mycontext);
+    const { Idatas, setIdatas,setProductData,productData } = useContext(Mycontext);
     const [formData, setFormData] = useState({
         productId: '',
         productName: '',
@@ -26,6 +26,7 @@ function Productmanage() {
         axios.get('http://localhost:4400/api/admin/items/get')
             .then(response => {
                 setIdatas(response.data.allProducts);
+                setProductData(response.data.allProducts)
             })
             .catch(error => {
                 console.error('Error fetching products:', error);

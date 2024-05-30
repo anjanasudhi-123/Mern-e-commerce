@@ -1,4 +1,5 @@
 const express = require('express')
+const Razorpay = require('razorpay')
 const cors = require('cors')
 const connectDBS = require('./confi/db')
 const adminroutes = require('./routes/adminroutes')

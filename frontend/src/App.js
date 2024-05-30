@@ -35,6 +35,8 @@ import AboutUs from './project/AboutUs';
 import Buynow from './project/buynow';
 import Customercare from './project/customercare';
 import Payment from './project/payment';
+import Paid from './project/Paid';
+
 
 
 
@@ -66,7 +68,7 @@ function App() {
 
 
   const [Idatas, setIdatas] = useState([])
-  const [filtereditems, setfiltereditems] = useState(Idatas)
+  // const [filtereditems, setfiltereditems] = useState(Idatas)
   const [searchitems, setsearchitems] = useState('')
   const [likeitem, setLikeitem] = useState([])
   const [userloggedin, setuserloggedin] = useState(false);
@@ -79,6 +81,9 @@ function App() {
   const [ban, setban] = useState([])
   const [productData, setProductData] = useState([])
 
+  const { payable, setPayable } = useState()
+
+
   const getProductData = async () => {
     try {
       const response = await axios.get("http://localhost:4400/api/admin/items/get")
@@ -90,15 +95,15 @@ function App() {
   }
   useEffect(() => {
     getProductData()
-  }, [])
+  }, [setProductData])
 
   const values = {
     // pData, setPData, 
     likeProduct, setLikeProduct, addcart, setaddcart, numproducts, setnumproducts, cost, setcost, cart, setCart,
     store, setstore, loguser, setloguser, pass, setPass, inputemail, setinputemail, password, setPassword, name, setname, email, setemail,
-    message, setmessage, filtereditems, setfiltereditems, searchitems, setsearchitems
+    message, setmessage, searchitems, setsearchitems
     , Idatas, setIdatas, likeitem, setLikeitem, userloggedin, setuserloggedin, usercartin, setcartin, loggeduser, setloggeduser, ban, setban, productData, setProductData,
-    like, setlike
+    like, setlike, payable, setPayable
   }
   return (
     <div className="App">
@@ -123,9 +128,11 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Registerpage />} />
             <Route path="/AboutUs" element={<AboutUs />} />
-            <Route path="/customercare" element={<Customercare/>}/>
-            <Route path="/buynow"element={<Buynow/>}/>
-            <Route path="/payment"element={<Payment/>}/>
+            <Route path="/customercare" element={<Customercare />} />
+            <Route path="/buynow" element={<Buynow />} />
+            <Route path="/payment" element={<Payment />} />
+            <Route path="/Paid" element={<Paid />} />
+
 
           </Routes>
         </Mycontext.Provider>

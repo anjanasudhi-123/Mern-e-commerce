@@ -16,13 +16,15 @@ import { useFetchLike } from './usefetchLike';
 
 function Navbar(props) {
     const { Idatas, setIdatas, likeitem, setLikeitem, addcart, setaddcart, loggeduser, setloggeduser, productData, setProductData, } = useContext(Mycontext)
-    
-    const [filtereditems, setfiltereditems] = useState(productData)
+
     const [searchitems, setsearchitems] = useState('')
     const [userloggedin, setuserloggedin] = useState(false);
     const [usercartin, setcartin] = useState(false);
     const navigate = useNavigate()
     const [cartItemCount, setCartItemCount] = useState(0);
+    const [products, setProducts] = useState([])
+    const [filtereditems, setfiltereditems] = useState(productData)
+
 
     const userEmail = localStorage.getItem("userEmail")
     const authToken = localStorage.getItem("authToken");
@@ -35,11 +37,26 @@ function Navbar(props) {
         setCartItemCount(cart.length);
     }, [cart]);
 
+    useEffect(() => {
+        getProducts()
+    }, [])
+
     console.log(props.item);
     const nav = useNavigate()
-    console.log("data", Idatas)
 
-    console.log("like",like);
+    console.log("data", Idatas)
+    console.log("like", like);
+
+    const getProducts = async () => {
+        try {
+            const response = await axios.get("http://localhost:4400/api/admin/items/get")
+
+            setProducts(response.data.allProducts);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    console.log("new", products);
 
     async function Likebtn(item) {
         if (authToken) {
@@ -67,6 +84,7 @@ function Navbar(props) {
     }
 
     async function cartbtn(item) {
+        const authToken = localStorage.getItem("authToken");
         if (authToken) {
             const isItemInCart = cart.some(cartItem => cartItem.id === item._id);
             if (isItemInCart) {
@@ -80,7 +98,7 @@ function Navbar(props) {
                     quantity: 1
                 };
                 const response = await axios.post(`http://localhost:4400/api/user/addtocart`, requestData);
-                setCart([...cart, { id: item._id, quantity: 1 }]);
+                // setCart([...cart, { id: item._id, quantity: 1 }]);
                 alert("Product added to cart successfully!");
             } catch (error) {
                 console.log(error);

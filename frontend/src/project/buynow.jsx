@@ -1,10 +1,16 @@
-import React, { useContext, useState } from 'react';
+
+// buynow
+import React, { useContext, useState,useEffect } from 'react';
 import { Table } from 'react-bootstrap';
 import { Mycontext } from './Newcont';
-import { useLocation } from 'react-router-dom';
+import { useLocation,useNavigate} from 'react-router-dom';
 
 export default function Buynow() {
+
+  const nav = useNavigate();
   const { productData, cart } = useContext(Mycontext);
+  const [selectaddress, setselectaddress] = useState(null);
+  const [editIndex, setEditIndex] = useState(null); 
   const [form, setForm] = useState({
     name: '',
     address: '',
@@ -15,7 +21,8 @@ export default function Buynow() {
     phone: ''
   });
 
-  const [savedAddress, setSavedAddress] = useState(null);
+  const [savedAddress, setSavedAddress] = useState([]);
+  const [payable, setPayable] = useState(0); 
 
   const handleChange = (e) => {
     setForm({
@@ -25,8 +32,23 @@ export default function Buynow() {
   };
 
   const handleSave = (e) => {
-    e.preventDefault(); // Prevent default form submission
-    setSavedAddress(form);
+    e.preventDefault();
+    console.log('Checking if email exists...');
+    const emailExists = savedAddress.some((address) => address.email === form.email);
+    console.log('Email exists:', emailExists);
+    if (emailExists) {
+      alert('Address with this email is already saved');
+      return;
+    }
+    if (editIndex !== null) {
+      const updatedAddresses = savedAddress.map((address, index) =>
+        index === editIndex ? form : address
+      );
+      setSavedAddress(updatedAddresses);
+      setEditIndex(null);
+    } else {
+      setSavedAddress((prevSavedAddresses) => [...prevSavedAddresses, form]);
+    }
     alert('Address saved');
     setForm({
       name: '',
@@ -39,18 +61,49 @@ export default function Buynow() {
     });
   };
 
+
+  const handleEdit = (index) => {
+    setEditIndex(index);
+    setForm(savedAddress[index]);
+  };
+
+  const handleaddress = (index) => {
+    setselectaddress(index);
+  };
+
   const location = useLocation();
   const product = location.state && location.state.product;
 
   const cartIds = cart.map((cartItem) => cartItem.id);
   const products = productData.filter((data) => cartIds.includes(data._id.toString()));
-
   console.log("loc", product);
+  
+  const deliveryaddress = selectaddress !== null ? savedAddress[selectaddress] : null;
+  console.log("deliveryaddress", deliveryaddress)
+
+  const calculatePayable = () => {
+    let total = 0;
+    if (product) {
+      total += product.price * (product.quantity || 1);
+    }
+    return total;
+  };
+
+
+  const handlePayment = () => {
+    // console.log("total",totalAmount);
+    const totalAmount = calculatePayable(); 
+    nav('/Paid', { state: {payable:totalAmount } });
+  };
+
+  useEffect(() => {
+   const total= calculatePayable();
+   setPayable(total)
+  }, [product]);
 
   return (
     <div className='buynow'>
       <div className='del'>
-        <h1>Deliver To</h1>
         <form onSubmit={handleSave} className='deli'>
           <div className='delform'>
             <input type="text" name="name" value={form.name} onChange={handleChange} placeholder='Name' required />
@@ -63,23 +116,54 @@ export default function Buynow() {
             <input type="text" name="city" value={form.city} onChange={handleChange} placeholder='City' required />
             <input type="text" name="phone" value={form.phone} onChange={handleChange} placeholder='Phone' required />
             <div className='bttn'>
-              <button type="submit">Save</button>
+              <button type="submit">{editIndex !== null ? 'Update' : 'Save'}</button>
             </div>
           </div>
         </form>
-        {savedAddress && (
+        {savedAddress.length > 0 && (
           <div className='saved-address'>
-            <h2>Saved Address:</h2>
-            <p>Name: {savedAddress.name}</p>
-            <p>Address: {savedAddress.address}</p>
-            <p>Email: {savedAddress.email}</p>
-            <p>Area: {savedAddress.area}</p>
-            <p>Pin: {savedAddress.pin}</p>
-            <p>City: {savedAddress.city}</p>
-            <p>Phone: {savedAddress.phone}</p>
+            <Table>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Name</th>
+                  <th>Address</th>
+                  <th>Pin</th>
+                  <th>Phone</th>
+                </tr>
+              </thead>
+              <tbody>
+                {savedAddress.map((address, index) => (
+                  <tr key={index}>
+                    <td>
+                      <input type="radio" name="selectedAddress" checked={selectaddress === index}
+                        onChange={() => handleaddress(index)} />
+                    </td>
+                    <td>{address.name}</td>
+                    <td>{address.address}</td>
+                    <td>{address.pin}</td>
+                    <td>{address.phone}</td>
+                    <td>
+                      <button className='btn btn-light' onClick={() => handleEdit(index)}>Edit</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
           </div>
         )}
       </div>
+      {deliveryaddress && (
+        <div className='selected-address-details'>
+          <h4>Address to Deliver:</h4>
+          <p><strong> {deliveryaddress.name} ,</strong></p>
+          <p><strong>{deliveryaddress.address}, </strong></p>
+          <p><strong>{deliveryaddress.area} ,</strong></p>
+          <p><strong> {deliveryaddress.city} ,</strong></p>
+          <p><strong>{deliveryaddress.pin} , </strong></p>
+          <p><strong>{deliveryaddress.phone} </strong></p>
+        </div>
+      )}
       <div className='summary'>
         <div className="col-md-8">
           <Table table-light size="sm">
@@ -109,7 +193,7 @@ export default function Buynow() {
         </div>
       </div>
       <div className='paybtn'>
-        <button type="button" className="btn btn-warning">PAY NOW</button>
+        <button type="button"  onClick={handlePayment }className="btn btn-warning">{`Proceed to payment of ₹${payable} through Payment Gateway ->`}</button>
       </div>
     </div>
   );

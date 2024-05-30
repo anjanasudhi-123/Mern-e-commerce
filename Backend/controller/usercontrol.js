@@ -3,6 +3,7 @@ const Product = require('../models/productmodel')
 
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
+const Razorpay = require('razorpay')
 const jwtSecretKey = "plmn123"
 
 
@@ -126,7 +127,7 @@ const updateCart = async (req, res) => {
         if (!user) {
             return res.status(404).json({ msg: "User not found" });
         }
-        console.log("update",req.body);
+        console.log("update", req.body);
 
         const existingItem = user.cart.find(item => item.id === id);
 
@@ -141,7 +142,7 @@ const updateCart = async (req, res) => {
         user.markModified('cart')
 
         await user.save();
-        const usercart=user.cart
+        const usercart = user.cart
         res.status(200).json({ message: "Cart item quantity updated successfully", usercart });
     } catch (error) {
         console.error("Error updating cart item quantity:", error);
@@ -279,12 +280,12 @@ const unlikeItem = async (req, res) => {
         if (user) {
             const { id } = req.body;
             // const likedItemIndex = user.likes.findOne({id:productId});
-            const likedItem=user.likes.find(item=>item.id===id)
+            const likedItem = user.likes.find(item => item.id === id)
 
             if (!likedItem) {
                 return res.status(400).json({ error: "Product not liked by user", success: false });
             }
-            console.log("rem",id,likedItem.id);
+            console.log("rem", id, likedItem.id);
             user.likes = user.likes.filter(data => data.id !== id);
             await user.save();
             res.json({ success: true, message: "Product unliked" });
@@ -298,18 +299,18 @@ const unlikeItem = async (req, res) => {
 };
 
 
-const likeData =  async(req,res)=>{
-    const{email,id}=req.body;
-    try{
-        const user =  await User.findOne({email})
-        if(!user){
-            return res.status(404).json({success:false,error:"User not found"})
+const likeData = async (req, res) => {
+    const { email, id } = req.body;
+    try {
+        const user = await User.findOne({ email })
+        if (!user) {
+            return res.status(404).json({ success: false, error: "User not found" })
         }
 
-        res.status(200).send({like:user.likes})
-    }catch(error){
+        res.status(200).send({ like: user.likes })
+    } catch (error) {
         console.error(error)
-        res.status(500).json({success:false,error:"An error occured while liking product"})
+        res.status(500).json({ success: false, error: "An error occured while liking product" })
     }
 }
 const updatelike = async (req, res) => {
@@ -336,6 +337,49 @@ const updatelike = async (req, res) => {
 };
 
 
+const makePayment = async (req, res) => {
+    try {
+        const razorpay = new Razorpay({
+            key_id:"rzp_test_JorS0iNRvZWc0T",
+            key_secret:"hT8woY5skBF0E7nPM6CZp6Wk"
+        })
+        const options = req.body
+        console.log('pay', req.body)
+        const order = await razorpay.orders.create(options)
+        if (!order) {
+            return res.status(404).send("error")
+        }
+        res.json(order)
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const Validatepayment = async (req, res) => {
+    try {
+        const { razorpay_order_id, razorpay_payment_id, razorpay_signature
+        } = req.body
+
+        const sha = crypto.createHmac('sha256', process.env.Razorpay_SECRET_KEY)
+        sha.update(`${razorpay_order_id}|${razorpay_payment_id}`)
+
+        const digest = sha.digest("hex")
+
+        if (digest !== razorpay_signature) {
+            return res.status(400).json({ message: "Transaction is legit" })
+        }
+        res.json({
+            message: "success",
+            orderId: razorpay_order_id,
+            paymentId: razorpay_payment_id
+        })
+    } catch (error) {
+    }
+}
+
+
+
+
 
 
 
@@ -356,5 +400,7 @@ module.exports = {
     likeItem,
     unlikeItem,
     likeData,
-    updatelike
+    updatelike,
+    makePayment,
+    Validatepayment
 }
