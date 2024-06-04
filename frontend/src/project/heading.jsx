@@ -46,6 +46,7 @@ function Heading() {
                             {likeitemcount > 0 && <span className="like-item-count">{likeitemcount}</span>}
                         </div>
                     </Link>
+                    <Link to={'/vieworders'}>orders</Link>
                     <Link to={"/Pcart"}>
                         <div className="cart-icon-container">
                             <img src={carticon} alt="cart" />

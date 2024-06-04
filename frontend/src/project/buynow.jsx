@@ -1,16 +1,24 @@
 
 // buynow
-import React, { useContext, useState,useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Table } from 'react-bootstrap';
 import { Mycontext } from './Newcont';
-import { useLocation,useNavigate} from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
 
 export default function Buynow() {
 
   const nav = useNavigate();
   const { productData, cart } = useContext(Mycontext);
   const [selectaddress, setselectaddress] = useState(null);
-  const [editIndex, setEditIndex] = useState(null); 
+  const [editIndex, setEditIndex] = useState(null);
+  const userEmail = localStorage.getItem("userEmail");
+
+
+  console.log("pay", userEmail);
+
+
   const [form, setForm] = useState({
     name: '',
     address: '',
@@ -22,7 +30,10 @@ export default function Buynow() {
   });
 
   const [savedAddress, setSavedAddress] = useState([]);
-  const [payable, setPayable] = useState(0); 
+  const location = useLocation();
+  const { state } = location;
+  const cartFromState = state?.cart || [];
+  const [payable, setPayable] = useState(0);
 
   const handleChange = (e) => {
     setForm({
@@ -33,23 +44,29 @@ export default function Buynow() {
 
   const handleSave = (e) => {
     e.preventDefault();
-    console.log('Checking if email exists...');
-    const emailExists = savedAddress.some((address) => address.email === form.email);
-    console.log('Email exists:', emailExists);
-    if (emailExists) {
-      alert('Address with this email is already saved');
-      return;
-    }
+    const addressData = { ...form, email: userEmail };
     if (editIndex !== null) {
-      const updatedAddresses = savedAddress.map((address, index) =>
-        index === editIndex ? form : address
-      );
-      setSavedAddress(updatedAddresses);
-      setEditIndex(null);
+      axios.post("http://localhost:4400/api/user/updateaddress", addressData)
+        .then(response => {
+          const updatedAddresses = savedAddress.map((address, index) =>
+            index === editIndex ? addressData : address
+          );
+          setSavedAddress(updatedAddresses);
+          setEditIndex(null);
+        })
+        .catch(error => {
+          console.error("Error updating address:", error);
+        });
     } else {
-      setSavedAddress((prevSavedAddresses) => [...prevSavedAddresses, form]);
+      axios.post("http://localhost:4400/api/user/addaddress", addressData)
+        .then(response => {
+          setSavedAddress(prevSavedAddresses => [...prevSavedAddresses, addressData]);
+        })
+        .catch(error => {
+          console.error("Error adding address:", error);
+        });
     }
-    alert('Address saved');
+
     setForm({
       name: '',
       address: '',
@@ -61,23 +78,39 @@ export default function Buynow() {
     });
   };
 
-
   const handleEdit = (index) => {
     setEditIndex(index);
     setForm(savedAddress[index]);
+  };
+
+  const handleDelete = (index) => {
+    const addressId = savedAddress[index]._id;
+    axios.delete("http://localhost:4400/api/user/deleteaddress", { data: { email: userEmail, addressId } })
+      .then(response => {
+        console.log("Deleted address response:", response);
+        const updatedAddresses = savedAddress.filter((address, i) => i !== index);
+        setSavedAddress(updatedAddresses);
+        if (selectaddress === index) {
+          setselectaddress(null);
+        } else if (selectaddress > index) {
+          setselectaddress(selectaddress - 1);
+        }
+      })
+      .catch(error => {
+        console.error("Error deleting address:", error);
+      });
   };
 
   const handleaddress = (index) => {
     setselectaddress(index);
   };
 
-  const location = useLocation();
   const product = location.state && location.state.product;
 
   const cartIds = cart.map((cartItem) => cartItem.id);
   const products = productData.filter((data) => cartIds.includes(data._id.toString()));
   console.log("loc", product);
-  
+
   const deliveryaddress = selectaddress !== null ? savedAddress[selectaddress] : null;
   console.log("deliveryaddress", deliveryaddress)
 
@@ -92,14 +125,28 @@ export default function Buynow() {
 
   const handlePayment = () => {
     // console.log("total",totalAmount);
-    const totalAmount = calculatePayable(); 
-    nav('/Paid', { state: {payable:totalAmount } });
+    const totalAmount = calculatePayable();
+    nav('/Paid', { state: { payable: totalAmount } });
   };
 
   useEffect(() => {
-   const total= calculatePayable();
-   setPayable(total)
+    const total = calculatePayable();
+    setPayable(total)
   }, [product]);
+
+  useEffect(() => {
+    console.log("User Email:", userEmail);
+    if (userEmail) {
+      axios.post("http://localhost:4400/api/user/getaddress", { email: userEmail })
+        .then(response => {
+          console.log("Fetched addresses response:", response);
+          setSavedAddress(response.data.currentUser);
+        })
+        .catch(error => {
+          console.error("Error fetching address:", error);
+        });
+    }
+  }, []);
 
   return (
     <div className='buynow'>
@@ -130,6 +177,8 @@ export default function Buynow() {
                   <th>Address</th>
                   <th>Pin</th>
                   <th>Phone</th>
+                  <th>Actions</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -145,6 +194,8 @@ export default function Buynow() {
                     <td>{address.phone}</td>
                     <td>
                       <button className='btn btn-light' onClick={() => handleEdit(index)}>Edit</button>
+                      <button className='btn btn-light' onClick={() => handleDelete(index)}>Delete</button>
+
                     </td>
                   </tr>
                 ))}
@@ -193,7 +244,7 @@ export default function Buynow() {
         </div>
       </div>
       <div className='paybtn'>
-        <button type="button"  onClick={handlePayment }className="btn btn-warning">{`Proceed to payment of ₹${payable} through Payment Gateway ->`}</button>
+        <button type="button" onClick={handlePayment} className="btn btn-warning">{`Proceed to payment of ₹${payable} through Payment Gateway ->`}</button>
       </div>
     </div>
   );

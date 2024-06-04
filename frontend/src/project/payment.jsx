@@ -1,17 +1,22 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Table } from 'react-bootstrap';
 import { Mycontext } from "./Newcont";
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function Payment() {
   const nav = useNavigate();
   const { productData } = useContext(Mycontext);
   const [payable, setPayable] = useState(0);
   const [editIndex, setEditIndex] = useState(null);
+  const userEmail = localStorage.getItem("userEmail");
+
+  console.log("pay", userEmail);
+
   const [form, setForm] = useState({
     name: '',
     address: '',
-    email: '',
+    email:'',
     area: '',
     pin: '',
     city: '',
@@ -21,7 +26,7 @@ function Payment() {
   const [savedAddress, setSavedAddress] = useState([]);
   const location = useLocation();
   const { state } = location;
-  const cartFromState = state.cart;
+  const cartFromState = state?.cart || [];
   const [products, setProducts] = useState([]);
   const [selectaddress, setselectaddress] = useState(null);
 
@@ -35,9 +40,32 @@ function Payment() {
     setPayable(productsWithQuantity.reduce((total, product) => total + product.price * product.quantity, 0));
   }, [cartFromState, productData]);
 
+
+
+  useEffect(() => {
+    console.log("User Email:", userEmail);
+    if (userEmail) {
+      axios.post("http://localhost:4400/api/user/getaddress", { email: userEmail })
+        .then(response => {
+          console.log("Fetched addresses response:", response);
+          setSavedAddress(response.data.currentUser);
+        })
+        .catch(error => {
+          console.error("Error fetching address:", error);
+        });
+    }
+  }, []);
+
+
+
+
   const handleaddress = (index) => {
     setselectaddress(index);
   };
+
+
+
+
 
   const handleChange = (e) => {
     setForm({
@@ -48,21 +76,29 @@ function Payment() {
 
   const handleSave = (e) => {
     e.preventDefault();
-    const emailExists = savedAddress.some((address) => address.email === form.email);
-    if (emailExists) {
-      alert('Address with this email is already saved');
-      return;
-    }
+    const addressData = { ...form, email: userEmail };
     if (editIndex !== null) {
-      const updatedAddresses = savedAddress.map((address, index) =>
-        index === editIndex ? form : address
-      );
-      setSavedAddress(updatedAddresses);
-      setEditIndex(null);
+      axios.post("http://localhost:4400/api/user/updateaddress", addressData)
+        .then(response => {
+          const updatedAddresses = savedAddress.map((address, index) =>
+            index === editIndex ? addressData : address
+          );
+          setSavedAddress(updatedAddresses);
+          setEditIndex(null);
+        })
+        .catch(error => {
+          console.error("Error updating address:", error);
+        });
     } else {
-      setSavedAddress(prevSavedAddresses => [...prevSavedAddresses, form]);
+      axios.post("http://localhost:4400/api/user/addaddress", addressData)
+        .then(response => {
+          setSavedAddress(prevSavedAddresses => [...prevSavedAddresses, addressData]);
+        })
+        .catch(error => {
+          console.error("Error adding address:", error);
+        });
     }
-    alert('Address saved');
+
     setForm({
       name: '',
       address: '',
@@ -72,22 +108,50 @@ function Payment() {
       city: '',
       phone: ''
     });
+    alert('Address saved');
   };
+
+
 
   const handleEdit = (index) => {
     setEditIndex(index);
     setForm(savedAddress[index]);
   };
 
+  const handleDelete = (index) => {
+    const addressId = savedAddress[index]._id;
+    axios.delete("http://localhost:4400/api/user/deleteaddress", { data: { email: userEmail, addressId } })
+      .then(response => {
+        console.log("Deleted address response:", response);
+        const updatedAddresses = savedAddress.filter((address, i) => i !== index);
+        setSavedAddress(updatedAddresses);
+        if (selectaddress === index) {
+          setselectaddress(null);
+        } else if (selectaddress > index) {
+          setselectaddress(selectaddress - 1);
+        }
+      })
+      .catch(error => {
+        console.error("Error deleting address:", error);
+      });
+  };
+
+
+
   const deliveryaddress = selectaddress !== null ? savedAddress[selectaddress] : null;
 
   const handlePayment = (e) => {
     e.preventDefault();
-    nav('/Paid', { state: { deliveryaddress, payable } });
+    if (deliveryaddress) {
+      nav('/Paid', { state: { deliveryaddress, payable } });
+    } else {
+      alert('Please select a delivery address.');
+    }
   };
 
   return (
     <div className='buynow'>
+      <Link to={"/vieworders"}>Order</Link>
       <div className='delpro'>
         <form onSubmit={handleSave} className='delipro'>
           <div className='delform'>
@@ -115,6 +179,9 @@ function Payment() {
                   <th>Address</th>
                   <th>Pin</th>
                   <th>Phone</th>
+                  <th>Actions</th>
+                  <th></th>
+
                 </tr>
               </thead>
               <tbody>
@@ -129,6 +196,8 @@ function Payment() {
                     <td>{address.phone}</td>
                     <td>
                       <button className='btn btn-light' onClick={() => handleEdit(index)}>Edit</button>
+                      <button className='btn btn-light' onClick={() => handleDelete(index)}>Delete</button>
+
                     </td>
                   </tr>
                 ))}

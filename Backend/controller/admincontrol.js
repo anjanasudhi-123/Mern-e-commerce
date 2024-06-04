@@ -80,9 +80,7 @@ const Getuser = async (req, res) => {
     const allUsers = await User.find()
     res.status(200).json({ message: "All users list", allUsers })
   } catch (error) {
-    res
-      .status(404)
-      .josn({ message: "All users list is not found:", error: error.message })
+    res .status(404) .josn({ message: "All users list is not found:", error: error.message })
     console.log(error)
   }
 

@@ -36,6 +36,7 @@ import Buynow from './project/buynow';
 import Customercare from './project/customercare';
 import Payment from './project/payment';
 import Paid from './project/Paid';
+import Vieworders from './project/vieworders';
 
 
 
@@ -132,6 +133,7 @@ function App() {
             <Route path="/buynow" element={<Buynow />} />
             <Route path="/payment" element={<Payment />} />
             <Route path="/Paid" element={<Paid />} />
+            <Route path="/vieworders" element={<Vieworders/>}/>
 
 
           </Routes>

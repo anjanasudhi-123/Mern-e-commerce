@@ -1,4 +1,4 @@
-const User = require('../models/usermodel')
+const { User } = require('../models/usermodel')
 const Product = require('../models/productmodel')
 
 const jwt = require('jsonwebtoken')
@@ -340,8 +340,8 @@ const updatelike = async (req, res) => {
 const makePayment = async (req, res) => {
     try {
         const razorpay = new Razorpay({
-            key_id:"rzp_test_JorS0iNRvZWc0T",
-            key_secret:"hT8woY5skBF0E7nPM6CZp6Wk"
+            key_id: "rzp_test_JorS0iNRvZWc0T",
+            key_secret: "hT8woY5skBF0E7nPM6CZp6Wk"
         })
         const options = req.body
         console.log('pay', req.body)
@@ -378,6 +378,110 @@ const Validatepayment = async (req, res) => {
 }
 
 
+const addAddress = async (req, res) => {
+    try {
+        const { name, address, area, city, phone, email, pin } = req.body;
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(408).json({ mssg: "user not found" });
+        }
+
+        const duplicateAddress = user.addresses.find(item =>
+            item.name === name && item.address === address && item.area === area &&
+            item.city === city && item.phone === phone && item.pin === pin
+        );
+
+        if (duplicateAddress) {
+            return res.status(409).json({ message: "Address already added" });
+        }
+
+        user.addresses.push({ email, name, address, area, city, phone, pin });
+        await user.save();
+
+        res.status(200).json({ message: "Address successfully added" });
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ message: "Unable to add address", error });
+    }
+};
+
+
+const getAddress = async (req, res) => {
+    try {
+        const { email } = req.body; // Ensure we're getting the email from the body
+        console.log("Received request for email:", email); // Log the email received from the request
+
+        // Use findOne instead of find to get a single user
+        const user = await User.findOne({ email });
+        console.log("Fetched user:", user); // Log the user fetched from the database
+
+        // Check if user exists
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+
+        const currentUser = user.addresses;
+
+        res.status(200).json({ success: true, currentUser });
+    } catch (error) {
+        console.error("Error fetching user:", error); // Log any errors that occur
+        res.status(500).send("Internal server error");
+    }
+};
+
+
+
+
+const updateAddress = async (req, res) => {
+    try {
+        const { name, address, area, city, phone, email, pin } = req.body;
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+
+        const addressIndex = user.addresses.findIndex(addr => addr.email === email);
+
+        if (addressIndex === -1) {
+            return res.status(409).json({ message: "Address not found for the user" });
+        }
+
+        user.addresses[addressIndex] = { name, address, area, city, phone, email, pin };
+        await user.save();
+
+        res.status(200).json({ message: "Address updated successfully", user });
+    } catch (error) {
+        console.error("Error updating address:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+const deleteAddress = async (req, res) => {
+    try {
+        const { email, addressId } = req.body;
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const addressIndex = user.addresses.findIndex(address => address._id.toString() === addressId);
+
+        if (addressIndex === -1) {
+            return res.status(404).json({ message: "Address not found" });
+        }
+        user.addresses.splice(addressIndex, 1);
+        await user.save();
+        console.log("Deleted address index:", addressIndex);
+        res.status(200).json({ message: "Address successfully deleted" });
+    } catch (error) {
+        console.error("Error deleting address:", error);
+        res.status(500).json({ message: "Unable to delete address", error: error.message });
+    }
+};
+
 
 
 
@@ -402,5 +506,10 @@ module.exports = {
     likeData,
     updatelike,
     makePayment,
-    Validatepayment
+    Validatepayment,
+    addAddress,
+    getAddress,
+    updateAddress,
+    deleteAddress
+
 }

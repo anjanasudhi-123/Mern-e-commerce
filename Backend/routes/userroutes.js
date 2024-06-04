@@ -22,5 +22,12 @@ router.post('/unlike', usercontrol.unlikeItem)
 router.post('/makepayment', usercontrol.makePayment)
 router.post('/validatepayment', usercontrol.Validatepayment)
 
+router.post('/addaddress',usercontrol.addAddress)
+router.post('/getaddress',usercontrol.getAddress)
+router.post('/updateaddress',usercontrol.updateAddress)
+router.delete('/deleteaddress',usercontrol.deleteAddress)
+
+
+
 module.exports = router
 
