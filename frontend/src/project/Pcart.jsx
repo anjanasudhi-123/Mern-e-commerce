@@ -27,7 +27,7 @@ function Pcart() {
       const response = await axios.post("http://localhost:4400/api/user/cartdata", { email: userEmail });
       const cartData = response.data.cart.map(item => ({
         ...item,
-        quantity: item.quantity || 1, // Ensure quantity is at least 1
+        quantity: item.quantity || 1,
       }));
       setCart(cartData);
       console.log("fetch cart data", response.data);
@@ -80,7 +80,7 @@ function Pcart() {
       await updateCartQuantity(id, newQuantity);
     }
   };
-  
+
 
   const removeQty = async (id) => {
     const item = cart.find((item) => item.id === id);

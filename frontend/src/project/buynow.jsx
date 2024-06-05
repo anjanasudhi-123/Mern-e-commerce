@@ -126,8 +126,19 @@ export default function Buynow() {
   const handlePayment = () => {
     // console.log("total",totalAmount);
     const totalAmount = calculatePayable();
+    if (deliveryaddress) {
     nav('/Paid', { state: { payable: totalAmount } });
-  };
+  } else {
+    alert('Please select a delivery address.');
+  }
+};
+
+
+
+
+
+
+
 
   useEffect(() => {
     const total = calculatePayable();

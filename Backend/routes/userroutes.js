@@ -27,6 +27,9 @@ router.post('/getaddress',usercontrol.getAddress)
 router.post('/updateaddress',usercontrol.updateAddress)
 router.delete('/deleteaddress',usercontrol.deleteAddress)
 
+router.post('/ordersummary',usercontrol.orderSummery)
+router.get('/getsummary',usercontrol.getSummary)
+
 
 
 module.exports = router

@@ -1,5 +1,6 @@
 const { User } = require('../models/usermodel')
 const Product = require('../models/productmodel')
+const Order = require('../models/summarymodel')
 
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
@@ -409,14 +410,13 @@ const addAddress = async (req, res) => {
 
 const getAddress = async (req, res) => {
     try {
-        const { email } = req.body; // Ensure we're getting the email from the body
-        console.log("Received request for email:", email); // Log the email received from the request
+        const { email } = req.body;
+        console.log("Received request for email:", email);
 
-        // Use findOne instead of find to get a single user
         const user = await User.findOne({ email });
-        console.log("Fetched user:", user); // Log the user fetched from the database
+        console.log("Fetched user:", user);
 
-        // Check if user exists
+
         if (!user) {
             return res.status(404).send("User not found");
         }
@@ -425,7 +425,7 @@ const getAddress = async (req, res) => {
 
         res.status(200).json({ success: true, currentUser });
     } catch (error) {
-        console.error("Error fetching user:", error); // Log any errors that occur
+        console.error("Error fetching user:", error);
         res.status(500).send("Internal server error");
     }
 };
@@ -483,10 +483,61 @@ const deleteAddress = async (req, res) => {
 };
 
 
+const orderSummery = async (req, res) => {
+    try {
+        const { email, address, pin, phone, payment } = req.body
 
+        if (!address || !pin || !phone || !payment) {
+            console.error("missing required fields.Email:", req.body)
 
+            return res.status(400).json({ success: false, error: "Missing required fields" })
+        }
+        const user = await User.findOne({ email });
+        console.log("orderuser",user);
+        if (!user) {
+            return res.status(404).json({ msg: "user not found" })
+        }
+        // const productExists = user.placed.some(item => item.id === id)
+        // if (productExists) {
+        //     return res.status(409).json({ msg: "product already exists" })
+        // }
+        user.placed.push({address, pin, payment, phone })
 
+        await user.save()
+        res.status(200).json({ message: "successfully added" })
 
+    } catch (error) {
+        console.error("Error addding product to placed orders:", error)
+        res.status(500).json({ message: "unable to add product to placed orders", error })
+    }
+}
+
+const getSummary = async (req, res) => {
+    try {
+        const { email } = req.body;
+        console.log("Received request for email:", email);
+
+        const user = await User.findOne({ email }).populate('orders'); 
+        console.log("Saved user:", user);
+
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+
+        const orders = user.orders.map(order => ({
+            date: order.date,
+            deliveryaddress: order.deliveryaddress,
+            payable: order.payable,
+            paymentStatus: order.paymentStatus,
+            status: order.status
+        }));
+
+        res.status(200).send({ orders });
+    } catch (error) {
+        console.error('Error selecting user:', error);
+        res.status(500).send("Internal server error");
+    }
+}
 
 
 
@@ -510,6 +561,8 @@ module.exports = {
     addAddress,
     getAddress,
     updateAddress,
-    deleteAddress
+    deleteAddress,
+    orderSummery,
+    getSummary
 
 }

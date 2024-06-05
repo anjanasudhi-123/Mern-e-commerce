@@ -16,7 +16,7 @@ function Payment() {
   const [form, setForm] = useState({
     name: '',
     address: '',
-    email:'',
+    email: '',
     area: '',
     pin: '',
     city: '',
@@ -58,10 +58,24 @@ function Payment() {
 
 
 
-
   const handleaddress = (index) => {
-    setselectaddress(index);
-  };
+    setselectaddress(index); 
+    const selectedAddress = savedAddress[index];
+    if (selectedAddress) {
+      const { email:userEmail, id:_id, address, pin, phone, payment } = selectedAddress;
+      axios.post("http://localhost:4400/api/user/ordersummary", { email:userEmail, address, pin, phone, payment:payable })
+        .then(response => {
+          console.log("Order placed successfully:", response.data);
+          console.log("User Email:", userEmail);
+
+        })
+        .catch(error => {
+          console.error("Error placing order:", error);
+        });
+    } else {
+      console.log("Selected address not found.");
+    }
+  }
 
 
 
@@ -143,7 +157,7 @@ function Payment() {
   const handlePayment = (e) => {
     e.preventDefault();
     if (deliveryaddress) {
-      nav('/Paid', { state: { deliveryaddress, payable } });
+      nav('/paid', { state: { deliveryaddress, payable } });
     } else {
       alert('Please select a delivery address.');
     }
