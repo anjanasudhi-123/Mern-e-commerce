@@ -11,8 +11,6 @@ function Payment() {
   const [editIndex, setEditIndex] = useState(null);
   const userEmail = localStorage.getItem("userEmail");
 
-  console.log("pay", userEmail);
-
   const [form, setForm] = useState({
     name: '',
     address: '',
@@ -28,7 +26,7 @@ function Payment() {
   const { state } = location;
   const cartFromState = state?.cart || [];
   const [products, setProducts] = useState([]);
-  const [selectaddress, setselectaddress] = useState(null);
+  const [selectaddress, setSelectAddress] = useState(null);
 
   useEffect(() => {
     const cartIds = cartFromState.map(cartItem => cartItem.id);
@@ -40,34 +38,43 @@ function Payment() {
     setPayable(productsWithQuantity.reduce((total, product) => total + product.price * product.quantity, 0));
   }, [cartFromState, productData]);
 
-
-
   useEffect(() => {
-    console.log("User Email:", userEmail);
     if (userEmail) {
       axios.post("http://localhost:4400/api/user/getaddress", { email: userEmail })
         .then(response => {
-          console.log("Fetched addresses response:", response);
           setSavedAddress(response.data.currentUser);
         })
         .catch(error => {
           console.error("Error fetching address:", error);
         });
     }
-  }, []);
+  }, [userEmail]);
 
+  const delAddress = JSON.parse(localStorage.getItem("deliveryAddress"));
 
+  console.log("del", delAddress);
+  
 
-  const handleaddress = (index) => {
-    setselectaddress(index); 
+  // useEffect(() => {
+  //   const savedAddress = localStorage.getItem('deliveryAddress');
+  //   if (savedAddress) {
+  //     const parsedAddress = JSON.parse(savedAddress);
+  //     const addressIndex = savedAddress.findIndex(address => address._id === parsedAddress._id);
+  //     if (addressIndex !== -1) {
+  //       setSelectAddress(addressIndex);
+  //     }
+  //   }
+  // }, [savedAddress]);
+
+  const handleAddress = (index) => {
+    setSelectAddress(index);
     const selectedAddress = savedAddress[index];
     if (selectedAddress) {
-      const { email:userEmail, id:_id, address, pin, phone, payment } = selectedAddress;
-      axios.post("http://localhost:4400/api/user/ordersummary", { email:userEmail, address, pin, phone, payment:payable })
+      localStorage.setItem("deliveryAddress", JSON.stringify(selectedAddress));
+      const { email: userEmail, id: _id, address, pin, phone } = selectedAddress;
+      axios.post("http://localhost:4400/api/user/ordersummary", { email: userEmail, address, pin, phone, payment: payable })
         .then(response => {
           console.log("Order placed successfully:", response.data);
-          console.log("User Email:", userEmail);
-
         })
         .catch(error => {
           console.error("Error placing order:", error);
@@ -76,10 +83,6 @@ function Payment() {
       console.log("Selected address not found.");
     }
   }
-
-
-
-
 
   const handleChange = (e) => {
     setForm({
@@ -125,8 +128,6 @@ function Payment() {
     alert('Address saved');
   };
 
-
-
   const handleEdit = (index) => {
     setEditIndex(index);
     setForm(savedAddress[index]);
@@ -136,13 +137,12 @@ function Payment() {
     const addressId = savedAddress[index]._id;
     axios.delete("http://localhost:4400/api/user/deleteaddress", { data: { email: userEmail, addressId } })
       .then(response => {
-        console.log("Deleted address response:", response);
         const updatedAddresses = savedAddress.filter((address, i) => i !== index);
         setSavedAddress(updatedAddresses);
         if (selectaddress === index) {
-          setselectaddress(null);
+          setSelectAddress(null);
         } else if (selectaddress > index) {
-          setselectaddress(selectaddress - 1);
+          setSelectAddress(selectaddress - 1);
         }
       })
       .catch(error => {
@@ -150,18 +150,17 @@ function Payment() {
       });
   };
 
-
-
-  const deliveryaddress = selectaddress !== null ? savedAddress[selectaddress] : null;
+  const deliveryAddress = selectaddress !== null ? savedAddress[selectaddress] : null;
 
   const handlePayment = (e) => {
     e.preventDefault();
-    if (deliveryaddress) {
-      nav('/paid', { state: { deliveryaddress, payable } });
+    if (deliveryAddress) {
+      nav('/vieworders', { state: { deliveryAddress, payable } });
     } else {
       alert('Please select a delivery address.');
     }
   };
+
 
   return (
     <div className='buynow'>
@@ -202,7 +201,7 @@ function Payment() {
                 {savedAddress.map((address, index) => (
                   <tr key={index}>
                     <td>
-                      <input type="radio" name="selectedAddress" checked={selectaddress === index} onChange={() => handleaddress(index)} />
+                      <input type="radio" name="selectedAddress" checked={selectaddress === index} onChange={() => handleAddress(index)} />
                     </td>
                     <td>{address.name}</td>
                     <td>{address.address}</td>
@@ -220,15 +219,15 @@ function Payment() {
           </div>
         )}
       </div>
-      {deliveryaddress && (
+      {deliveryAddress && (
         <div className='selected-address-details'>
           <h4>Address to Deliver:</h4>
-          <p><strong>{deliveryaddress.name},</strong></p>
-          <p><strong>{deliveryaddress.address},</strong></p>
-          <p><strong>{deliveryaddress.area},</strong></p>
-          <p><strong>{deliveryaddress.city},</strong></p>
-          <p><strong>{deliveryaddress.pin},</strong></p>
-          <p><strong>{deliveryaddress.phone}</strong></p>
+          <p><strong>{delAddress.name},</strong></p>
+          <p><strong>{delAddress.address},</strong></p>
+          <p><strong>{delAddress.area},</strong></p>
+          <p><strong>{delAddress.city},</strong></p>
+          <p><strong>{delAddress.pin},</strong></p>
+          <p><strong>{delAddress.phone}</strong></p>
         </div>
       )}
       <div className="row">

@@ -134,12 +134,6 @@ export default function Buynow() {
 };
 
 
-
-
-
-
-
-
   useEffect(() => {
     const total = calculatePayable();
     setPayable(total)
