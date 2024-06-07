@@ -26,7 +26,7 @@ function Payment() {
   const { state } = location;
   const cartFromState = state?.cart || [];
   const [products, setProducts] = useState([]);
-  const [selectaddress, setSelectAddress] = useState(null);
+  const [selectAddress, setSelectAddress] = useState(null);
 
   useEffect(() => {
     const cartIds = cartFromState.map(cartItem => cartItem.id);
@@ -50,21 +50,15 @@ function Payment() {
     }
   }, [userEmail]);
 
-  const delAddress = JSON.parse(localStorage.getItem("deliveryAddress"));
-
-  console.log("del", delAddress);
-  
-
-  // useEffect(() => {
-  //   const savedAddress = localStorage.getItem('deliveryAddress');
-  //   if (savedAddress) {
-  //     const parsedAddress = JSON.parse(savedAddress);
-  //     const addressIndex = savedAddress.findIndex(address => address._id === parsedAddress._id);
-  //     if (addressIndex !== -1) {
-  //       setSelectAddress(addressIndex);
-  //     }
-  //   }
-  // }, [savedAddress]);
+  useEffect(() => {
+    const savedAddressFromStorage = JSON.parse(localStorage.getItem("deliveryAddress"));
+    if (savedAddressFromStorage) {
+      const addressIndex = savedAddress.findIndex(address => address._id === savedAddressFromStorage._id);
+      if (addressIndex !== -1) {
+        setSelectAddress(addressIndex);
+      }
+    }
+  }, [savedAddress]);
 
   const handleAddress = (index) => {
     setSelectAddress(index);
@@ -82,7 +76,7 @@ function Payment() {
     } else {
       console.log("Selected address not found.");
     }
-  }
+  };
 
   const handleChange = (e) => {
     setForm({
@@ -139,10 +133,10 @@ function Payment() {
       .then(response => {
         const updatedAddresses = savedAddress.filter((address, i) => i !== index);
         setSavedAddress(updatedAddresses);
-        if (selectaddress === index) {
+        if (selectAddress === index) {
           setSelectAddress(null);
-        } else if (selectaddress > index) {
-          setSelectAddress(selectaddress - 1);
+        } else if (selectAddress > index) {
+          setSelectAddress(selectAddress - 1);
         }
       })
       .catch(error => {
@@ -150,18 +144,16 @@ function Payment() {
       });
   };
 
-  const deliveryAddress = selectaddress !== null ? savedAddress[selectaddress] : null;
+  const deliveryAddress = selectAddress !== null ? savedAddress[selectAddress] : null;
 
   const handlePayment = (e) => {
     e.preventDefault();
     if (deliveryAddress) {
-      nav('/vieworders', { state: { deliveryAddress, payable } });
+      nav('/Paid', { state: { deliveryAddress, payable } });
     } else {
       alert('Please select a delivery address.');
     }
   };
-
-
   return (
     <div className='buynow'>
       <Link to={"/vieworders"}>Order</Link>
@@ -194,14 +186,13 @@ function Payment() {
                   <th>Phone</th>
                   <th>Actions</th>
                   <th></th>
-
                 </tr>
               </thead>
               <tbody>
                 {savedAddress.map((address, index) => (
                   <tr key={index}>
                     <td>
-                      <input type="radio" name="selectedAddress" checked={selectaddress === index} onChange={() => handleAddress(index)} />
+                      <input type="radio" name="selectedAddress" checked={selectAddress === index} onChange={() => handleAddress(index)} />
                     </td>
                     <td>{address.name}</td>
                     <td>{address.address}</td>
@@ -210,7 +201,6 @@ function Payment() {
                     <td>
                       <button className='btn btn-light' onClick={() => handleEdit(index)}>Edit</button>
                       <button className='btn btn-light' onClick={() => handleDelete(index)}>Delete</button>
-
                     </td>
                   </tr>
                 ))}
@@ -222,12 +212,12 @@ function Payment() {
       {deliveryAddress && (
         <div className='selected-address-details'>
           <h4>Address to Deliver:</h4>
-          <p><strong>{delAddress.name},</strong></p>
-          <p><strong>{delAddress.address},</strong></p>
-          <p><strong>{delAddress.area},</strong></p>
-          <p><strong>{delAddress.city},</strong></p>
-          <p><strong>{delAddress.pin},</strong></p>
-          <p><strong>{delAddress.phone}</strong></p>
+          <p><strong>{deliveryAddress.name},</strong></p>
+          <p><strong>{deliveryAddress.address},</strong></p>
+          <p><strong>{deliveryAddress.area},</strong></p>
+          <p><strong>{deliveryAddress.city},</strong></p>
+          <p><strong>{deliveryAddress.pin},</strong></p>
+          <p><strong>{deliveryAddress.phone}</strong></p>
         </div>
       )}
       <div className="row">
