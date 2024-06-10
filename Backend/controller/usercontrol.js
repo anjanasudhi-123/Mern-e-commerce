@@ -483,62 +483,6 @@ const deleteAddress = async (req, res) => {
 };
 
 
-// const orderSummery = async (req, res) => {
-//     try {
-//         const { email, address, pin, phone, payment } = req.body
-
-//         if (!address || !pin || !phone || !payment) {
-//             console.error("missing required fields.Email:", req.body)
-
-//             return res.status(400).json({ success: false, error: "Missing required fields" })
-//         }
-//         const user = await User.findOne({ email });
-//         console.log("orderuser", user);
-//         if (!user) {
-//             return res.status(404).json({ msg: "user not found" })
-//         }
-//         // const productExists = user.placed.some(item => item.id === id)
-//         // if (productExists) {
-//         //     return res.status(409).json({ msg: "product already exists" })
-//         // }
-//         user.placed.push({ address, pin, payment, phone })
-
-//         await user.save()
-//         res.status(200).json({ message: "successfully added" })
-
-//     } catch (error) {
-//         console.error("Error addding product to placed orders:", error)
-//         res.status(500).json({ message: "unable to add product to placed orders", error })
-//     }
-// }
-
-// const getSummary = async (req, res) => {
-//     try {
-//         const { email } = req.body;
-//         console.log("Received request for email:", email);
-
-//         const user = await User.findOne({ email }).populate('orders');
-//         console.log("Saved user:", user);
-
-//         if (!user) {
-//             return res.status(404).send('User not found');
-//         }
-
-//         const orders = user.orders.map(order => ({
-//             date: order.date,
-//             deliveryaddress: order.deliveryaddress,
-//             payable: order.payable,
-//             paymentStatus: order.paymentStatus,
-//             status: order.status
-//         }));
-
-//         res.status(200).send({ orders });
-//     } catch (error) {
-//         console.error('Error selecting user:', error);
-//         res.status(500).send("Internal server error");
-//     }
-// }
-
 const saveOrder = async (req, res) => {
     try {
         const { email, address, pin, phone, payment, products, date, status, paymentStatus } = req.body;

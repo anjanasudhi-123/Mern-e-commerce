@@ -1,5 +1,3 @@
-
-// buynow
 import React, { useContext, useState, useEffect } from 'react';
 import { Table } from 'react-bootstrap';
 import { Mycontext } from './Newcont';
@@ -15,9 +13,7 @@ export default function Buynow() {
   const [editIndex, setEditIndex] = useState(null);
   const userEmail = localStorage.getItem("userEmail");
 
-
   console.log("pay", userEmail);
-
 
   const [form, setForm] = useState({
     name: '',
@@ -103,6 +99,8 @@ export default function Buynow() {
 
   const handleaddress = (index) => {
     setselectaddress(index);
+    localStorage.setItem('deliveryAddress', JSON.stringify(savedAddress[index]));
+
   };
 
   const product = location.state && location.state.product;
@@ -111,8 +109,10 @@ export default function Buynow() {
   const products = productData.filter((data) => cartIds.includes(data._id.toString()));
   console.log("loc", product);
 
-  const deliveryaddress = selectaddress !== null ? savedAddress[selectaddress] : null;
+  
+  const deliveryaddress = JSON.parse(localStorage.getItem('deliveryAddress'));
   console.log("deliveryaddress", deliveryaddress)
+
 
   const calculatePayable = () => {
     let total = 0;
@@ -122,17 +122,34 @@ export default function Buynow() {
     return total;
   };
 
-
-  const handlePayment = () => {
-    // console.log("total",totalAmount);
+  const handlePayment = async () => {
     const totalAmount = calculatePayable();
     if (deliveryaddress) {
-    nav('/Paid', { state: { payable: totalAmount } });
-  } else {
-    alert('Please select a delivery address.');
-  }
-};
+      
+      const orderData = {
+        email: userEmail,
+        address: deliveryaddress.address,
+        pin: deliveryaddress.pin,
+        phone: deliveryaddress.phone,
+        payment: totalAmount,
+        products: products,
+        date: new Date(),
+        status: 'pending', 
+        paymentStatus: 'pending'
+      };
 
+      try {
+        const response = await axios.post("http://localhost:4400/api/user/saveorder", orderData);
+        console.log(response.data);
+        nav('/Paid', { state: { payable: totalAmount } });
+      } catch (error) {
+        console.error("Error saving order:", error);
+        alert('Failed to save order. Please try again.');
+      }
+    } else {
+      alert('Please select a delivery address.');
+    }
+  };
 
   useEffect(() => {
     const total = calculatePayable();
@@ -140,12 +157,17 @@ export default function Buynow() {
   }, [product]);
 
   useEffect(() => {
-    console.log("User Email:", userEmail);
     if (userEmail) {
       axios.post("http://localhost:4400/api/user/getaddress", { email: userEmail })
         .then(response => {
-          console.log("Fetched addresses response:", response);
           setSavedAddress(response.data.currentUser);
+          const savedDeliveryAddress = JSON.parse(localStorage.getItem('deliveryAddress'));
+          if (savedDeliveryAddress) {
+            const addressIndex = response.data.currentUser.findIndex(address => address._id === savedDeliveryAddress._id);
+            if (addressIndex !== -1) {
+              setselectaddress(addressIndex);
+            }
+          }
         })
         .catch(error => {
           console.error("Error fetching address:", error);

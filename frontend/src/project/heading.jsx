@@ -35,8 +35,8 @@ function Heading() {
             <div className='top'>
                 <h1 className="class" onClick={home}>LuxeHaven</h1>
                 <div className='logo'>
-                    <Link to={"/like"} className="nav-link">LIKE {likeitemcount > 0 && <span className="like-item-count">{likeitemcount}</span>}</Link>
                     <Link to={'/vieworders'} className="nav-link">ORDERS</Link>
+                    <Link to={"/like"} className="nav-link">LIKE {likeitemcount > 0 && <span className="like-item-count">{likeitemcount}</span>}</Link>
                     <Link to={"/Pcart"} className="nav-link">CART {cartItemCount > 0 && <span className="cart-item-count">{cartItemCount}</span>}</Link>
                     {authToken ? (
                         <button onClick={handleLogout} className="btn btn-outline-danger">Logout</button>

@@ -115,7 +115,7 @@ h6 {
 .logo {
     display: flex;
     align-items: center;
-    margin-right: 20px; 
+    margin-right: 10px; 
     font-family: sans-serif;
 }
 .like-item-count{
@@ -133,12 +133,13 @@ h6 {
     margin-right: 20px;
 }
 .like-item-count, .cart-item-count {
-    background-color:yellow;
-    color: white;
-    border-radius: 50%;
+    background-color:wheat;
+    color: black;
+    border-radius:50%;
     padding: 2px 6px;
-    margin-left: 5px;
+    margin-left:-3px;
     font-size: 0.8em;
+    margin-top: 1px;
 }
 
 .reg,
@@ -230,25 +231,6 @@ h6 {
     margin-left: 5px;
     margin-top: 20px;
 }
-
-.cart-item-count,
-.like-item-count {
-    background-color: red;
-    color: white;
-    border-radius: 50%;
-    padding: 3px 6px;
-    font-size: 10px;
-    top: -2px;
-    right: -1px;
-    position: absolute;
-}
-
-.cart-icon-container,
-.like-icon-container {
-    position: relative;
-
-}
-
 .reg p {
     margin-top: 50px
 }
