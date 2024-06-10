@@ -237,7 +237,7 @@ export const itemdatas = [
     category:"OUTWEAR",
     description:"crop and jogger set",
     price:2134,
-    image:"https://i.pinimg.com/originals/23/a9/1d/23a91d1e7293c57df7cbafd3c2fd783b.png", qty: 1
+    image:"https://m.media-amazon.com/images/I/61-6T3-o6NL._AC_UL480_FMwebp_QL65_.jpg", qty: 1
   },
   {
     id: 29,

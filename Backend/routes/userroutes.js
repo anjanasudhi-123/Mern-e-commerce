@@ -22,13 +22,15 @@ router.post('/unlike', usercontrol.unlikeItem)
 router.post('/makepayment', usercontrol.makePayment)
 router.post('/validatepayment', usercontrol.Validatepayment)
 
-router.post('/addaddress',usercontrol.addAddress)
-router.post('/getaddress',usercontrol.getAddress)
-router.post('/updateaddress',usercontrol.updateAddress)
-router.delete('/deleteaddress',usercontrol.deleteAddress)
+router.post('/addaddress', usercontrol.addAddress)
+router.post('/getaddress', usercontrol.getAddress)
+router.post('/updateaddress', usercontrol.updateAddress)
+router.delete('/deleteaddress', usercontrol.deleteAddress)
 
-router.post('/ordersummary',usercontrol.orderSummery)
-router.get('/getsummary',usercontrol.getSummary)
+// router.post('/ordersummary', usercontrol.orderSummery)
+// router.get('/getsummary', usercontrol.getSummary)
+router.post('/saveorder', usercontrol.saveOrder)
+router.post('/getorder',usercontrol.getOrder)
 
 
 

@@ -65,8 +65,24 @@ function Payment() {
     const selectedAddress = savedAddress[index];
     if (selectedAddress) {
       localStorage.setItem("deliveryAddress", JSON.stringify(selectedAddress));
-      const { email: userEmail, id: _id, address, pin, phone } = selectedAddress;
-      axios.post("http://localhost:4400/api/user/ordersummary", { email: userEmail, address, pin, phone, payment: payable })
+      const { email: userEmail, address, pin, phone } = selectedAddress;
+      const orderData = {
+        email: userEmail,
+        address,
+        pin,
+        phone,
+        payment: payable,
+        products: products.map(product => ({
+          productId: product._id,
+          name: product.name,
+          quantity: product.quantity,
+          price: product.price
+        })),
+        date: new Date(),
+        status: 'Pending',
+        paymentStatus: 'Unpaid'
+      };
+      axios.post("http://localhost:4400/api/user/saveorder", orderData)
         .then(response => {
           console.log("Order placed successfully:", response.data);
         })
@@ -146,17 +162,23 @@ function Payment() {
 
   const deliveryAddress = selectAddress !== null ? savedAddress[selectAddress] : null;
 
-  const handlePayment = (e) => {
+  const handlevieworder = (e) => {
     e.preventDefault();
     if (deliveryAddress) {
-      nav('/Paid', { state: { deliveryAddress, payable } });
+      nav('/vieworders', { state: { deliveryAddress, payable } });
     } else {
       alert('Please select a delivery address.');
     }
   };
+
+
+  const handlerazorpay =() =>{
+    nav('/paid',{state:{amount:payable} })
+  }
+
   return (
     <div className='buynow'>
-      <Link to={"/vieworders"}>Order</Link>
+      {/* <Link to={"/vieworders"}>Order</Link> */}
       <div className='delpro'>
         <form onSubmit={handleSave} className='delipro'>
           <div className='delform'>
@@ -252,7 +274,7 @@ function Payment() {
         </div>
       </div>
       <div className='paybtn'>
-        <button type="button" className="btn btn-warning" onClick={handlePayment}>{`Proceed to payment of ₹${payable} through Payment Gateway ->`}</button>
+        <button type="button" className="btn btn-warning" onClick={handlerazorpay}>{`Proceed to payment of ₹${payable} through Payment Gateway ->`}</button>
       </div>
     </div>
   );
