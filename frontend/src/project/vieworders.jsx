@@ -32,6 +32,7 @@ function ViewOrders() {
         <thead>
           <tr>
             <th>Date</th>
+            <th></th>
             <th>Product Details</th>
             <th>Delivery Address</th>
             <th>Payable Amount</th>
@@ -43,6 +44,7 @@ function ViewOrders() {
           {orders.map((order, index) => (
             <tr key={index}>
               <td>{order.date ? formatDate(order.date) : formatDate(new Date())}</td>
+              <td></td>
               <td>
                 {order.products ? order.products.map(product => (
                   <div key={product.productId}>

@@ -172,8 +172,8 @@ function Payment() {
   };
 
 
-  const handlerazorpay =() =>{
-    nav('/paid',{state:{amount:payable} })
+  const handlerazorpay = () => {
+    nav('/paid', { state: { amount: payable } })
   }
 
   return (
