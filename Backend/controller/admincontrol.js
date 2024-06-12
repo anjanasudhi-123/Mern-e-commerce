@@ -1,5 +1,6 @@
+// const User = require('../models/usermodel');
 const Product = require('../models/productmodel');
-const User = require('../models/usermodel');
+const {User}= require("../models/usermodel")
 
 const getProducts = async (req, res) => {
   try {
@@ -80,11 +81,12 @@ const Getuser = async (req, res) => {
     const allUsers = await User.find()
     res.status(200).json({ message: "All users list", allUsers })
   } catch (error) {
-    res .status(404) .josn({ message: "All users list is not found:", error: error.message })
+    res .status(404) .json({ message: "All users list is not found:", error: error.message })
     console.log(error)
   }
-
 }
+
+
 const DeleteUser = async (req, res) => {
   const userId = req.params.id;
   console.log('User ID to delete:', userId);

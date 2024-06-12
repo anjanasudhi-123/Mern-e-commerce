@@ -73,9 +73,9 @@ function Loginpage() {
   // console.log("logged",loggeduser);
 
   return (
-    <div className="containers">
+    <div className="locontainers">
       <div className="login">
-        <h1>Login </h1><br></br>
+        <img src="https://png.pngtree.com/png-vector/20191110/ourmid/pngtree-avatar-icon-profile-icon-member-login-vector-isolated-png-image_1978396.jpg" width={80}></img>
         <input
           type="email"
           placeholder="Enter email here"

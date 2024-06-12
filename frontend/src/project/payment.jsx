@@ -11,6 +11,9 @@ function Payment() {
   const [editIndex, setEditIndex] = useState(null);
   const userEmail = localStorage.getItem("userEmail");
 
+  const [paymentStatus, setPaymentStatus] = useState('Pending');
+
+
   const [form, setForm] = useState({
     name: '',
     address: '',
@@ -162,22 +165,57 @@ function Payment() {
 
   const deliveryAddress = selectAddress !== null ? savedAddress[selectAddress] : null;
 
-  const handlevieworder = (e) => {
-    e.preventDefault();
+  // const handlevieworder = (e) => {
+  //   e.preventDefault();
+  //   if (deliveryAddress) {
+  //     nav('/vieworders', { state: { deliveryAddress, payable } });
+  //   } else {
+  //     alert('Please select a delivery address.');
+  //   }
+  // };
+
+  
+  
+  const handlerazorpay = async () => {
     if (deliveryAddress) {
-      nav('/vieworders', { state: { deliveryAddress, payable } });
+      const body = {}; 
+      try {
+        const validate = await axios.post(`http://localhost:4400/api/user/validatepayment`, body, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        console.log(validate.data);
+
+        handleSuccessfulPayment();
+        nav('/Paid', { state: { deliveryAddress, payable, products } });
+      } catch (error) {
+        console.error('Error validating payment:', error);
+      }
     } else {
       alert('Please select a delivery address.');
     }
   };
 
+ 
 
-  const handlerazorpay = () => {
-    nav('/paid', { state: { amount: payable } })
-  }
+  const handleSuccessfulPayment = () => {
+    setPaymentStatus('Success');
+  };
+
+
+
+
+
+
 
   return (
     <div className='buynow'>
+       {paymentStatus === 'Success' && (
+        <div className="alert alert-success" role="alert">
+          Payment successful! Thank you for your order.
+        </div>
+      )}
       {/* <Link to={"/vieworders"}>Order</Link> */}
       <div className='delpro'>
         <form onSubmit={handleSave} className='delipro'>

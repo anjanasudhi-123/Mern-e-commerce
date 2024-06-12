@@ -41,30 +41,32 @@ function Registerpage() {
         }
 
         axios.post('http://localhost:4400/api/user/register', { email: inputemail, password })
-        .then(response => {
-            console.log(response.data);
-            if (response.data.success) {
-                alert("Successfully registered");
-                setinputemail("");
-                setPassword("");
-                navigate("/login");
-            } else {
-                alert("Registration failed");
-            }
-        })
-        .catch(error => {
-            console.error('Error registering:', error);
-            alert("An error occurred during registration");
-        });
-};
+            .then(response => {
+                console.log(response.data);
+                if (response.data.success) {
+                    alert("Successfully registered");
+                    setinputemail("");
+                    setPassword("");
+                    navigate("/login");
+                } else {
+                    alert("Registration failed");
+                }
+            })
+            .catch(error => {
+                console.error('Error registering:', error);
+                alert("An error occurred during registration");
+            });
+    };
 
 
 
     return (
-        
+
         <div className="containers">
+             <div className="imag-container">
+                <img src="https://img.freepik.com/free-vector/face-recognition-personal-identification-secure-access-profile-entry-data-storage-opening-female-account-holder-cartoon-character-vector-isolated-concept-metaphor-illustration_335657-2852.jpg" alt="Registration Image" width={300} />
+            </div>
             <div className="reg">
-                <h1>Register  </h1><br></br>
                 <input
                     type="email"
                     placeholder="Enter email here"
@@ -88,8 +90,9 @@ function Registerpage() {
                     Account already exists! <Link to={"/login"}>Login here</Link>
                 </p>
             </div>
+           
         </div>
-        
+
     );
 }
 

@@ -31,6 +31,7 @@ router.delete('/deleteaddress', usercontrol.deleteAddress)
 // router.get('/getsummary', usercontrol.getSummary)
 router.post('/saveorder', usercontrol.saveOrder)
 router.post('/getorder',usercontrol.getOrder)
+router.post('/orderstatus',usercontrol.Orderstatus)
 
 
 

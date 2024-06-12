@@ -111,6 +111,7 @@ function Pcart() {
 
   const handlebuy = (product) => {
     navigate('/buynow', { state: { ...location.state, product } });
+    console.log("product",product)
   };
 
   return (
@@ -118,8 +119,8 @@ function Pcart() {
       <Heading />
       <div className="container mt-4">
         {cart.length === 0 ? (
-          <h3>Your cart is empty.</h3>
-        ) : (
+        <h2>Cart is emptyy !!</h2>
+      ) : (
           <>
             <Table table-light>
               <thead>

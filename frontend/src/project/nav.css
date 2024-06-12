@@ -81,10 +81,10 @@ p {
     width: 50%;
 }
 
-img {
-    width: 100px;
-    height: 100%;
-}
+.liked img {
+    width: 80px;
+    height: 80%;
+} 
 
 h6 {
     margin-top: 50px;
@@ -165,12 +165,27 @@ h6 {
     display: inline-block;
     height: 180px;
 }
-
 .containers {
+    display: flex;
+    align-items: center; 
+    width: 600px; 
+    margin: 100px auto; 
+    border-radius: 15px;
+    padding: 30px;
+    margin-left:20%;
+}
+.reg {
+    flex: 1;
+    margin-right: 10px;
+    
+}
+
+
+.locontainers{
     width: 450px;
     height: 350px;
     margin-top: 100px;
-    border-radius: 15px;
+    border-radius: 55px;
     padding: 30px;
     margin-left: 35%;
     border: 1px solid grey;
@@ -179,15 +194,20 @@ h6 {
 .containers button {
     background-color: lightblue;
 }
+.locontainers button{
+    background-color: lightblue;
+
+}
 
 .reg input {
-    width: 400px;
+    width: 350px;
     height: 50px
 }
 
 .login input {
     width: 400px;
-    height: 50px
+    height: 50px;
+    
 }
 
 .image-container {
@@ -195,6 +215,7 @@ h6 {
     display: inline-block;
     margin-right: 100px;
 }
+
 
 .images img {
     width: 280px;
@@ -234,6 +255,7 @@ h6 {
 .reg p {
     margin-top: 50px
 }
+
 
 .login p {
     margin-top: 50px
@@ -305,16 +327,16 @@ button[type="submit"]:hover {
     text-decoration: underline;
 }
 
-.pritem {
+ .card {
     width: 200px;
     transform: 0.3s;
     display: inline-block;
     margin-bottom: 100px;
-    margin-right: 10%;
+    margin-right:5%;
     padding: 0%;
-    margin-top: 5%;
-    box-shadow: 0px 9px 7px grey;
-}
+    margin-top: 10%;
+
+} 
 
 .forms form {
     width: 250px;
@@ -589,7 +611,8 @@ button:hover {
 }
 .selected-address-details p,h4{
     display: inline;
-    font-size: large;    
+    font-size: large;  
+    font-family:Arial, Helvetica, sans-serif  
 }
 .selected-address-details{
     margin-top: 30px;
@@ -607,4 +630,5 @@ button:hover {
     width: 100%;
     max-width: 1200px; 
   }
+ 
   

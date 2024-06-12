@@ -356,27 +356,51 @@ const makePayment = async (req, res) => {
     }
 }
 
+// const Validatepayment = async (req, res) => {
+//     try {
+//         const { razorpay_order_id, razorpay_payment_id, razorpay_signature
+//         } = req.body
+
+//         const sha = crypto.createHmac('sha256', process.env.Razorpay_SECRET_KEY)
+//         sha.update(`${razorpay_order_id}|${razorpay_payment_id}`)
+
+//         const digest = sha.digest("hex")
+
+//         if (digest !== razorpay_signature) {
+//             return res.status(400).json({ message: "Transaction is legit" })
+//         }
+//         res.json({
+//             message: "success",
+//             orderId: razorpay_order_id,
+//             paymentId: razorpay_payment_id
+//         })
+//     } catch (error) {
+//     }
+// }
+
 const Validatepayment = async (req, res) => {
+
+
     try {
-        const { razorpay_order_id, razorpay_payment_id, razorpay_signature
-        } = req.body
-
-        const sha = crypto.createHmac('sha256', process.env.Razorpay_SECRET_KEY)
-        sha.update(`${razorpay_order_id}|${razorpay_payment_id}`)
-
-        const digest = sha.digest("hex")
-
-        if (digest !== razorpay_signature) {
-            return res.status(400).json({ message: "Transaction is legit" })
+        const { paymentId } = req.body;
+        const order = await Order.findOne({ 'products.paymentId': paymentId });
+    
+        if (!order) {
+          return res.status(404).json({ error: 'Order not found' });
         }
-        res.json({
-            message: "success",
-            orderId: razorpay_order_id,
-            paymentId: razorpay_payment_id
-        })
-    } catch (error) {
+        order.paymentStatus = 'Paid';
+        order.status = 'Completed';
+    
+        await order.save();
+    
+        res.json({ message: 'Payment validated successfully' });
+      } catch (error) {
+        console.error('Error validating payment:', error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
     }
-}
+
+
 
 
 const addAddress = async (req, res) => {
@@ -514,9 +538,23 @@ const getOrder = async (req, res) => {
     }
   };
   
-  
-  
-  
+  const Orderstatus= async(req,res)=>{
+  const { orderId, status, paymentStatus } = req.body;
+    try {
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+        order.status = status || order.status;
+        order.paymentStatus = paymentStatus || order.paymentStatus;
+        await order.save();
+        res.status(200).json({ message: 'Order updated successfully', order });
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating order', error });
+    }
+
+
+}
 
 
 
@@ -544,9 +582,8 @@ module.exports = {
     getAddress,
     updateAddress,
     deleteAddress,
-    // orderSummery,
-    // getSummary,
     saveOrder,
-    getOrder
+    getOrder,
+    Orderstatus
 
 }

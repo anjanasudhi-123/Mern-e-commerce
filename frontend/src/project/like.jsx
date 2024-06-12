@@ -113,7 +113,7 @@ console.log("pro",products,likeIds)
       <Heading />
 
       {like.length === 0 && (
-        <h3>No items found.</h3>
+        <h2>No items found !!</h2>
       )}
       {like.length > 0 && (
         <>

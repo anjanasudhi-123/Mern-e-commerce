@@ -110,21 +110,23 @@ function Productmanage() {
                 </form>
             </div>
 
-            {Idatas.map((item, index) => (
-                <div className='pritem' key={index}>
-                    <img src={item.image} alt="img" width="400px" height="300px" /><br />
-                    <div className='item-1'>
-                        <h2>{item.name}</h2>
-                        <p>{item.category}</p>
-                        <p>{item.description}</p>
-                        <p>₹{item.price}</p>
-                    </div>
-                    <div className='probtn'>
-                    <button className='btn btn-light' onClick={() => editItem(item)}>Edit</button>
-                    <button className='btn btn-light' onClick={() => deleteItem(item._id)}>Delete</button>
-                </div>
-                </div>
+            <div className="row">
+                    {Idatas.map((item, index) => (
+                        <div className="col-md-2 " key={index}>
+                            <div className="card">
+                                <img src={item.image} className="card-img-top" alt={item.name} />
+                                <div className="card-body">
+                                    <h5 className="card-title">{item.name}</h5>
+                                    <p className="card-text">{item.category}</p>
+                                    <p className="card-text">{item.description}</p>
+                                    <p className="card-text">₹{item.price}</p>
+                                    <button className="btn btn-light mr-2" onClick={() => editItem(item)}>Edit</button>
+                                    <button className="btn btn-light" onClick={() => deleteItem(item._id)}>Delete</button>
+                                </div>
+                            </div>
+                        </div>
             ))}
+            </div>
         </header>
     );
 }
