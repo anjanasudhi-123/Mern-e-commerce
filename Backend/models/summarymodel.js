@@ -6,12 +6,30 @@ const orderSchema = new mongoose.Schema({
         required: true
     },
     deliveryaddress: {
-        name: String,
-        address: String,
-        area: String,
-        city: String,
-        pin: String,
-        phone: String
+        name: {
+            type: String,
+            // required: true
+        },
+        address: {
+            type: String,
+            // required: true
+        },
+        area: {
+            type: String,
+            // required: true
+        },
+        city: {
+            type: String,
+            // required: true
+        },
+        pin: {
+            type: String,
+            // required: true
+        },
+        phone: {
+            type: String,
+            // required: true
+        }
     },
     payable: {
         type: Number,
@@ -23,14 +41,23 @@ const orderSchema = new mongoose.Schema({
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'Product'
             },
-            name: String,
-            quantity: Number,
-            price: Number
+            name: {
+                type: String,
+                required: true
+            },
+            quantity: {
+                type: Number,
+                required: true
+            },
+            price: {
+                type: Number,
+                required: true
+            }
         }
     ],
     date: {
         type: Date,
-        // default: Date.now
+        default: Date.now
     },
     status: {
         type: String,

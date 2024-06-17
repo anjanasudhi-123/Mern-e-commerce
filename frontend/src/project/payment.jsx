@@ -12,6 +12,7 @@ function Payment() {
   const userEmail = localStorage.getItem("userEmail");
 
   const [paymentStatus, setPaymentStatus] = useState('Pending');
+  const [orderData, setOrderData] = useState(null)
 
 
   const [form, setForm] = useState({
@@ -68,9 +69,10 @@ function Payment() {
     const selectedAddress = savedAddress[index];
     if (selectedAddress) {
       localStorage.setItem("deliveryAddress", JSON.stringify(selectedAddress));
-      const { email: userEmail, address, pin, phone } = selectedAddress;
+      const { email: userEmail, name, address, pin, phone } = selectedAddress;
       const orderData = {
         email: userEmail,
+        name,
         address,
         pin,
         phone,
@@ -174,21 +176,22 @@ function Payment() {
   //   }
   // };
 
-  
-  
+
+
   const handlerazorpay = async () => {
     if (deliveryAddress) {
-      const body = {}; 
+      const body = {};
       try {
         const validate = await axios.post(`http://localhost:4400/api/user/validatepayment`, body, {
           headers: {
             'Content-Type': 'application/json',
           },
         });
-        console.log(validate.data);
+        console.log("val", validate.data);
+        setOrderData(validate.data.order)
 
-        handleSuccessfulPayment();
-        nav('/Paid', { state: { deliveryAddress, payable, products } });
+        handleSuccessfulPayment()
+        nav('/Paid', { state: { deliveryAddress, payable, products, orderData } });
       } catch (error) {
         console.error('Error validating payment:', error);
       }
@@ -197,7 +200,7 @@ function Payment() {
     }
   };
 
- 
+
 
   const handleSuccessfulPayment = () => {
     setPaymentStatus('Success');
@@ -211,7 +214,7 @@ function Payment() {
 
   return (
     <div className='buynow'>
-       {paymentStatus === 'Success' && (
+      {paymentStatus === 'Success' && (
         <div className="alert alert-success" role="alert">
           Payment successful! Thank you for your order.
         </div>

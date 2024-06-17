@@ -6,7 +6,7 @@ import { useLocation } from 'react-router-dom';
 
 function Paid() {
   const location = useLocation();
-  const { deliveryaddress, payable} = location.state
+  const { deliveryaddress, payable,orderData} = location.state
   // const {totalAmount}=location.state
   const { product } = location.state
   // const [payable, setPayable] = useState(totalAmount);

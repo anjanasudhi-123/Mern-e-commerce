@@ -379,12 +379,10 @@ const makePayment = async (req, res) => {
 // }
 
 const Validatepayment = async (req, res) => {
-
-
     try {
         const { paymentId } = req.body;
         const order = await Order.findOne({ 'products.paymentId': paymentId });
-    
+        console.log("order",order,paymentId);
         if (!order) {
           return res.status(404).json({ error: 'Order not found' });
         }
@@ -393,7 +391,7 @@ const Validatepayment = async (req, res) => {
     
         await order.save();
     
-        res.json({ message: 'Payment validated successfully' });
+        res.json({ message: 'Payment validated successfully',order });
       } catch (error) {
         console.error('Error validating payment:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -438,7 +436,7 @@ const getAddress = async (req, res) => {
         console.log("Received request for email:", email);
 
         const user = await User.findOne({ email });
-        console.log("Fetched user:", user);
+        // console.log("Fetched user:", user);
 
 
         if (!user) {
@@ -509,27 +507,44 @@ const deleteAddress = async (req, res) => {
 
 const saveOrder = async (req, res) => {
     try {
-        const { email, address, pin, phone, payment, products, date, status, paymentStatus } = req.body;
+        const { email, name, address, pin, phone, payment, products, date, status, paymentStatus } = req.body;
+
+        console.log("orderdata",req.body);
+        
+        // Create new order object
         const order = new Order({
             email,
-            deliveryaddress: { address, pin, phone },
+            deliveryaddress: { name, address, pin, phone },
             payable: payment,
             products,
             date,
             status,
             paymentStatus
         });
+        
+        // Save the order to MongoDB
         await order.save();
+
+        // Update the order status and payment status
+        await Order.findOneAndUpdate(
+            { email: email, date: date }, // Query to find the specific order
+            { status: "success", paymentStatus: "success" }, // Update fields
+            { new: true } // Option to return the modified document
+        );
+
+        // Send success response
         res.status(200).json({ success: true, message: "Order saved successfully" });
     } catch (error) {
         console.error("Error saving order:", error);
         res.status(500).json({ success: false, error: "An error occurred while saving the order" });
     }
 };
+
+
 const getOrder = async (req, res) => {
     try {
       const { email } = req.body;
-      const orders = await Order.find({ email });
+      const orders = await Order.find({ email }).sort({ date: -1 }); // sorting by date in descending order
       console.log("Fetched Orders:", orders); 
       res.status(200).json({ success: true, orders });
     } catch (error) {

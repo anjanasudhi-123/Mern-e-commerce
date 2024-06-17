@@ -39,6 +39,8 @@ function ViewOrders(props) {
 
   const groupedOrders = groupOrdersByDate(orders);
 
+  console.log("grouped",groupedOrders);
+
   return (
     <Container className='ordersummary'>
       {paymentStatus === 'Success' && (
@@ -66,14 +68,14 @@ function ViewOrders(props) {
                 </tr>
               </thead>
               <tbody>
-                {groupedOrders[date].map((order, orderIndex) => (
+                {groupedOrders[date].map((order, orderIndex) => 
                   <tr key={orderIndex}>
                     <td>
-                      {order.products ? order.products.map((product, productIndex) => (
+                      {order.products && order.products.map((product, productIndex) => 
                         <div key={product.productId || productIndex}>
-                          {product.name} (x{product.quantity})
+                          {product.name} x{product.quantity}
                         </div>
-                      )) : 'No products'}
+                      ) }
                     </td>
                     <td>
                       {order.deliveryaddress ? (
@@ -83,11 +85,11 @@ function ViewOrders(props) {
                         </>
                       ) : 'No address'}
                     </td>
-                    <td>{order.products.reduce((total, prod) => total + prod.price * prod.quantity, 0)}</td>
+                    <td>₹{order.products.reduce((total, prod) => total + prod.price * prod.quantity, 0)}</td>
                     <td>{order.status === 'Completed' ? 'Successful' : order.status}</td>
                     <td>{order.paymentStatus === 'Paid' ? 'Successful' : order.paymentStatus}</td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </Table>
           </div>

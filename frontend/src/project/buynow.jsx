@@ -13,6 +13,10 @@ export default function Buynow() {
   const [editIndex, setEditIndex] = useState(null);
   const userEmail = localStorage.getItem("userEmail");
 
+  const [paymentStatus, setPaymentStatus] = useState('Pending');
+  const [orderData,setOrderData]=useState(null)
+
+
   console.log("pay", userEmail);
 
   const [form, setForm] = useState({
@@ -128,6 +132,7 @@ export default function Buynow() {
       
       const orderData = {
         email: userEmail,
+        name:deliveryaddress.name,
         address: deliveryaddress.address,
         pin: deliveryaddress.pin,
         phone: deliveryaddress.phone,
@@ -135,7 +140,7 @@ export default function Buynow() {
         products: products,
         date: new Date(),
         status: 'pending', 
-        paymentStatus: 'pending'
+        paymentStatus: 'unpaid'
       };
 
       try {
