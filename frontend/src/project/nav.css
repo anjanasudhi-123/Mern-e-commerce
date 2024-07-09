@@ -630,5 +630,41 @@ button:hover {
     width: 100%;
     max-width: 1200px; 
   }
- 
+  .paid {
+    text-align: center;
+    padding: 50px;
+    background-color: #f8f9fa;
+  }
   
+  .paid img {
+    width: 150px;
+    margin-bottom: 20px;
+  }
+  
+  .paid .bold {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #28a745;
+  }
+  
+  .paid a {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 1em;
+    color: #fff;
+    background-color:black;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+  }
+  
+  .paid a:hover {
+    background-color:grey;
+  }
+  .text-right a{
+    text-decoration:underline;
+    margin-left: 50px;
+  }
+ 

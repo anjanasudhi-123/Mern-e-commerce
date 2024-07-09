@@ -1,24 +1,17 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Table } from 'react-bootstrap';
 import { Mycontext } from './Newcont';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-
 export default function Buynow() {
-
   const nav = useNavigate();
   const { productData, cart } = useContext(Mycontext);
-  const [selectaddress, setselectaddress] = useState(null);
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [selectaddress, setSelectAddress] = useState(null);
   const [editIndex, setEditIndex] = useState(null);
   const userEmail = localStorage.getItem("userEmail");
-
-  const [paymentStatus, setPaymentStatus] = useState('Pending');
-  const [orderData,setOrderData]=useState(null)
-
-
-  console.log("pay", userEmail);
-
+  const [products, setProducts] = useState([]);
   const [form, setForm] = useState({
     name: '',
     address: '',
@@ -28,12 +21,13 @@ export default function Buynow() {
     city: '',
     phone: ''
   });
-
   const [savedAddress, setSavedAddress] = useState([]);
   const location = useLocation();
   const { state } = location;
-  const cartFromState = state?.cart || [];
+  const cartFromState = Array.isArray(state?.product) ? state.product : [];
   const [payable, setPayable] = useState(0);
+  const [orderData, setOrderData] = useState(null);
+  const [paymentStatus, setPaymentStatus] = useState('Pending');
 
   const handleChange = (e) => {
     setForm({
@@ -45,6 +39,7 @@ export default function Buynow() {
   const handleSave = (e) => {
     e.preventDefault();
     const addressData = { ...form, email: userEmail };
+
     if (editIndex !== null) {
       axios.post("http://localhost:4400/api/user/updateaddress", addressData)
         .then(response => {
@@ -87,13 +82,12 @@ export default function Buynow() {
     const addressId = savedAddress[index]._id;
     axios.delete("http://localhost:4400/api/user/deleteaddress", { data: { email: userEmail, addressId } })
       .then(response => {
-        console.log("Deleted address response:", response);
         const updatedAddresses = savedAddress.filter((address, i) => i !== index);
         setSavedAddress(updatedAddresses);
         if (selectaddress === index) {
-          setselectaddress(null);
+          setSelectAddress(null);
         } else if (selectaddress > index) {
-          setselectaddress(selectaddress - 1);
+          setSelectAddress(selectaddress - 1);
         }
       })
       .catch(error => {
@@ -101,65 +95,71 @@ export default function Buynow() {
       });
   };
 
-  const handleaddress = (index) => {
-    setselectaddress(index);
-    localStorage.setItem('deliveryAddress', JSON.stringify(savedAddress[index]));
-
-  };
-
-  const product = location.state && location.state.product;
-
-  const cartIds = cart.map((cartItem) => cartItem.id);
-  const products = productData.filter((data) => cartIds.includes(data._id.toString()));
-  console.log("loc", product);
-
-  
-  const deliveryaddress = JSON.parse(localStorage.getItem('deliveryAddress'));
-  console.log("deliveryaddress", deliveryaddress)
-
-
   const calculatePayable = () => {
     let total = 0;
-    if (product) {
-      total += product.price * (product.quantity || 1);
+    if (cartFromState.length > 0) {
+      total = cartFromState.reduce((acc, cartItem) => {
+        const product = productData.find(p => p._id === cartItem._id);
+        if (product) {
+          return acc + (product.price * cartItem.quantity);
+        } else {
+          console.error(`Product with ID ${cartItem._id} not found`);
+        }
+        return acc;
+      }, 0);
     }
     return total;
   };
 
-  const handlePayment = async () => {
-    const totalAmount = calculatePayable();
-    if (deliveryaddress) {
-      
+  const handleAddressSelect = (index) => {
+    setSelectAddress(index);
+    const selectedAddress = savedAddress[index];
+    if (selectedAddress) {
       const orderData = {
-        email: userEmail,
-        name:deliveryaddress.name,
-        address: deliveryaddress.address,
-        pin: deliveryaddress.pin,
-        phone: deliveryaddress.phone,
+        email: selectedAddress.email,
+        name: selectedAddress.name,
+        address: selectedAddress.address,
+        pin: selectedAddress.pin,
+        city: selectedAddress.city,
+        area: selectedAddress.area,
+        phone: selectedAddress.phone,
         payment: totalAmount,
-        products: products,
+        products: cartFromState.map(cartItem => {
+          const product = productData.find(p => p._id === cartItem._id);
+          if (!product) {
+            console.error(`Product with ID ${cartItem._id} not found`);
+            return null;
+          }
+          return {
+            productId: product._id,
+            name: product.name,
+            quantity: cartItem.quantity || 1,
+            price: product.price || 0,
+          };
+        }).filter(product => product !== null),
         date: new Date(),
-        status: 'pending', 
-        paymentStatus: 'unpaid'
+        status: 'Pending',
+        paymentStatus: 'Unpaid'
       };
 
-      try {
-        const response = await axios.post("http://localhost:4400/api/user/saveorder", orderData);
-        console.log(response.data);
-        nav('/Paid', { state: { payable: totalAmount } });
-      } catch (error) {
-        console.error("Error saving order:", error);
-        alert('Failed to save order. Please try again.');
-      }
+      axios.post("http://localhost:4400/api/user/saveorder", orderData)
+        .then(response => {
+          console.log("Saved order response:", response.data);
+        })
+        .catch(error => {
+          console.error('Error saving order:', error);
+          alert('Failed to save order. Please try again.');
+        });
     } else {
-      alert('Please select a delivery address.');
+      alert('Selected address not found.');
     }
   };
 
   useEffect(() => {
     const total = calculatePayable();
-    setPayable(total)
-  }, [product]);
+    setTotalAmount(total);
+    setPayable(total);
+  }, [cartFromState, productData]);
 
   useEffect(() => {
     if (userEmail) {
@@ -170,7 +170,7 @@ export default function Buynow() {
           if (savedDeliveryAddress) {
             const addressIndex = response.data.currentUser.findIndex(address => address._id === savedDeliveryAddress._id);
             if (addressIndex !== -1) {
-              setselectaddress(addressIndex);
+              setSelectAddress(addressIndex);
             }
           }
         })
@@ -178,7 +178,107 @@ export default function Buynow() {
           console.error("Error fetching address:", error);
         });
     }
-  }, []);
+  }, [userEmail]);
+
+  useEffect(() => {
+    console.log('Form state:', form);
+    console.log('Cart from state:', cartFromState);
+  }, [form, cartFromState]);
+
+  useEffect(() => {
+    console.log('Product data:', productData);
+  }, [productData]);
+
+  const handlerazorpay = async () => {
+    if (selectaddress === null) {
+      alert('Please select a delivery address.');
+      return;
+    }
+
+    const deliveryAddress = savedAddress[selectaddress];
+    const products = cartFromState.map(cartItem => {
+      const product = productData.find(p => p._id === cartItem._id);
+      return {
+        productId: product._id,
+        name: product.name,
+        quantity: cartItem.quantity || 1,
+        price: product.price || 0,
+      };
+    });
+
+    try {
+      const orderResponse = await axios.post('http://localhost:4400/api/user/makepayment', {
+        amount: payable,
+        currency: 'INR'
+      });
+
+      if (!orderResponse.data || !orderResponse.data.id) {
+        alert('Failed to create order. Please try again.');
+        console.error('Order Response:', orderResponse.data);
+        return;
+      }
+
+      const { amount, id: order_id, currency } = orderResponse.data;
+
+      const options = {
+        key: 'rzp_test_JorS0iNRvZWc0T',
+        amount: amount.toString(),
+        currency: currency,
+        name: 'Luxehaven',
+        description: 'Test Transaction',
+        order_id: order_id,
+        handler: async function (response) {
+          const paymentPayload = {
+            paymentId: response.razorpay_payment_id,
+            deliveryAddress,
+            orderId: response.razorpay_order_id,
+            signature: response.razorpay_signature,
+            products,
+            payable,
+            totalAmount,
+            email: userEmail
+          };
+
+          try {
+            const validateResponse = await axios.post('http://localhost:4400/api/user/validatepayment', paymentPayload, {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            });
+
+            setOrderData(validateResponse.data.order);
+
+            handleSuccessfulPayment();
+            nav('/Paid', { state: { selectaddress, totalAmount, products, orderData: validateResponse.data.order } });
+          } catch (error) {
+            console.error('Error validating payment:', error);
+            alert('Failed to validate payment. Please try again.');
+          }
+        },
+        prefill: {
+          name: 'anjana',
+          email: 'anjana@gmail.com',
+          contact: '9999999999'
+        },
+        notes: {
+          address: 'Your address'
+        },
+        theme: {
+          color: '#3399cc'
+        }
+      };
+
+      const rzp1 = new window.Razorpay(options);
+      rzp1.open();
+    } catch (error) {
+      console.error('Error initiating payment:', error);
+      alert('Oops, something went wrong. Error in opening checkout');
+    }
+  };
+
+  const handleSuccessfulPayment = () => {
+    setPaymentStatus('Success');
+  };
 
   return (
     <div className='buynow'>
@@ -210,15 +310,18 @@ export default function Buynow() {
                   <th>Pin</th>
                   <th>Phone</th>
                   <th>Actions</th>
-                  <th></th>
                 </tr>
               </thead>
               <tbody>
                 {savedAddress.map((address, index) => (
                   <tr key={index}>
                     <td>
-                      <input type="radio" name="selectedAddress" checked={selectaddress === index}
-                        onChange={() => handleaddress(index)} />
+                      <input
+                        type="radio"
+                        name="selectedAddress"
+                        checked={selectaddress === index}
+                        onChange={() => handleAddressSelect(index)}
+                      />
                     </td>
                     <td>{address.name}</td>
                     <td>{address.address}</td>
@@ -227,7 +330,6 @@ export default function Buynow() {
                     <td>
                       <button className='btn btn-light' onClick={() => handleEdit(index)}>Edit</button>
                       <button className='btn btn-light' onClick={() => handleDelete(index)}>Delete</button>
-
                     </td>
                   </tr>
                 ))}
@@ -236,20 +338,20 @@ export default function Buynow() {
           </div>
         )}
       </div>
-      {deliveryaddress && (
+      {selectaddress !== null && (
         <div className='selected-address-details'>
           <h4>Address to Deliver:</h4>
-          <p><strong> {deliveryaddress.name} ,</strong></p>
-          <p><strong>{deliveryaddress.address}, </strong></p>
-          <p><strong>{deliveryaddress.area} ,</strong></p>
-          <p><strong> {deliveryaddress.city} ,</strong></p>
-          <p><strong>{deliveryaddress.pin} , </strong></p>
-          <p><strong>{deliveryaddress.phone} </strong></p>
+          <p><strong>{savedAddress[selectaddress].name},</strong></p>
+          <p><strong>{savedAddress[selectaddress].address},</strong></p>
+          <p><strong>{savedAddress[selectaddress].area},</strong></p>
+          <p><strong>{savedAddress[selectaddress].pin},</strong></p>
+          <p><strong>{savedAddress[selectaddress].city},</strong></p>
+          <p><strong>{savedAddress[selectaddress].phone}</strong></p>
         </div>
       )}
-      <div className='summary'>
-        <div className="col-md-8">
-          <Table table-light size="sm">
+      <div className="row">
+        <div className="col-md-5">
+          <Table className="table-light" size="sm">
             <thead>
               <tr>
                 <th style={{ width: '25%' }}>Image</th>
@@ -260,23 +362,29 @@ export default function Buynow() {
               </tr>
             </thead>
             <tbody>
-              {product && (
-                <tr>
-                  <td>
-                    <img src={product.image} alt={product.name} style={{ width: '120px', height: '110px' }} />
-                  </td>
-                  <td>{product.name}</td>
-                  <td>{product.category}</td>
-                  <td>{product.quantity}</td>
-                  <td>₹{product.price * (product.quantity || 1)}</td>
-                </tr>
-              )}
+              {cartFromState.map((cartItem, index) => {
+                const product = productData.find(p => p._id === cartItem._id);
+                return (
+                  <tr key={index}>
+                    <td><img src={cartItem.image} alt={cartItem.name} style={{ width: '50px', height: '50px' }} /></td>
+                    <td>{cartItem.name}</td>
+                    <td>{cartItem.category}</td>
+                    <td>{cartItem.quantity}</td>
+                    <td>₹{parseInt(cartItem.price) * parseInt(cartItem.quantity)}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </Table>
         </div>
       </div>
+      <div className="row">
+        <div className="col-md-8">
+          <h4>Total Amount: ₹{totalAmount}</h4>
+        </div>
+      </div>
       <div className='paybtn'>
-        <button type="button" onClick={handlePayment} className="btn btn-warning">{`Proceed to payment of ₹${payable} through Payment Gateway ->`}</button>
+        <button type="button" className="btn btn-warning" onClick={handlerazorpay}>{`Proceed to payment of ₹${totalAmount} through Payment Gateway ->`}</button>
       </div>
     </div>
   );

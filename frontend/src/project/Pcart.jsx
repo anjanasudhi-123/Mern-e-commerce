@@ -110,7 +110,7 @@ function Pcart() {
   console.log("pr", products);
 
   const handlebuy = (product) => {
-    navigate('/buynow', { state: { ...location.state, product } });
+    navigate('/buynow', { state: { ...location.state,product: [product] } });
     console.log("product",product)
   };
 

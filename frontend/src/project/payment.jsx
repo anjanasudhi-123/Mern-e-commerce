@@ -7,6 +7,7 @@ import axios from 'axios';
 function Payment() {
   const nav = useNavigate();
   const { productData } = useContext(Mycontext);
+  const [totalAmount, setTotalAmount] = useState(0);
   const [payable, setPayable] = useState(0);
   const [editIndex, setEditIndex] = useState(null);
   const userEmail = localStorage.getItem("userEmail");
@@ -90,6 +91,7 @@ function Payment() {
       axios.post("http://localhost:4400/api/user/saveorder", orderData)
         .then(response => {
           console.log("Order placed successfully:", response.data);
+
         })
         .catch(error => {
           console.error("Error placing order:", error);
@@ -167,36 +169,81 @@ function Payment() {
 
   const deliveryAddress = selectAddress !== null ? savedAddress[selectAddress] : null;
 
-  // const handlevieworder = (e) => {
-  //   e.preventDefault();
-  //   if (deliveryAddress) {
-  //     nav('/vieworders', { state: { deliveryAddress, payable } });
-  //   } else {
-  //     alert('Please select a delivery address.');
-  //   }
-  // };
-
 
 
   const handlerazorpay = async () => {
-    if (deliveryAddress) {
-      const body = {};
-      try {
-        const validate = await axios.post(`http://localhost:4400/api/user/validatepayment`, body, {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        console.log("val", validate.data);
-        setOrderData(validate.data.order)
-
-        handleSuccessfulPayment()
-        nav('/Paid', { state: { deliveryAddress, payable, products, orderData } });
-      } catch (error) {
-        console.error('Error validating payment:', error);
-      }
-    } else {
+    if (!deliveryAddress) {
       alert('Please select a delivery address.');
+      return;
+    }
+
+    try {
+      // Send only the necessary fields to the backend
+      const orderResponse = await axios.post('http://localhost:4400/api/user/makepayment', {
+        amount: payable, // Amount should be in the smallest currency unit (e.g., paise for INR)
+        currency: 'INR' // Or any other currency you are using
+      });
+
+      if (!orderResponse.data || !orderResponse.data.id) {
+        alert('Failed to create order. Please try again.');
+        console.error('Order Response:', orderResponse.data);
+        return;
+      }
+
+      const { amount, id: order_id, currency } = orderResponse.data;
+
+      const options = {
+        key: 'rzp_test_JorS0iNRvZWc0T', // Ensure this matches your actual Razorpay Key ID
+        amount: amount.toString(),
+        currency: currency,
+        name: 'Luxehaven',
+        description: 'Test Transaction',
+        order_id: order_id,
+        handler: async function (response) {
+          console.log('Razorpay Response:', response);
+
+          const paymentPayload = {
+            paymentId: response.razorpay_payment_id,
+            deliveryAddress,
+            orderId: response.razorpay_order_id,
+            signature: response.razorpay_signature,
+            products,
+            payable,
+            totalAmount,
+            email: userEmail
+          };
+
+          console.log('Payment Payload:', paymentPayload);
+
+          const validateResponse = await axios.post('http://localhost:4400/api/user/validatepayment', paymentPayload, {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          setOrderData(validateResponse.data.order);
+
+          handleSuccessfulPayment();
+          nav('/Paid', { state: { deliveryAddress, payable, products, orderData: validateResponse.data.order } });
+        },
+        prefill: {
+          name: 'anjana',
+          email: 'anjana@gmail.com',
+          contact: '9999999999'
+        },
+        notes: {
+          address: 'Your address'
+        },
+        theme: {
+          color: '#3399cc'
+        }
+      };
+
+      const rzp1 = new window.Razorpay(options);
+      rzp1.open();
+    } catch (error) {
+      console.error('Error initiating payment:', error);
+      alert('Oops, something went wrong. Error in opening checkout');
     }
   };
 
@@ -205,12 +252,6 @@ function Payment() {
   const handleSuccessfulPayment = () => {
     setPaymentStatus('Success');
   };
-
-
-
-
-
-
 
   return (
     <div className='buynow'>

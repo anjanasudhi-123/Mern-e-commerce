@@ -52,7 +52,7 @@ const userSchema = new mongoose.Schema({
     type: Array,
     ref: 'product'
   },
-  placed:{
+  orders:{
     type:Array,
     default:[]
   },

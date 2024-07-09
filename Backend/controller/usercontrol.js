@@ -11,11 +11,6 @@ const jwtSecretKey = "plmn123"
 const createuser = async (req, res) => {
     let hashedpassword = await bcrypt.hash(req.body.password, 10)
     try {
-        // await User.create({
-        //     email:req.body.email,
-        //     password:hashedpassword
-        // })
-
         const user = new User({ email: req.body.email, password: hashedpassword })
         await user.save()
         res.json({ success: true })
@@ -31,7 +26,6 @@ const loginuser = async (req, res) => {
     try {
         const { email, password } = req.body;
         if (email === "admin@gmail.com" && password === "Admin123") {
-            // const authToken = jwt.sign({ email }, jwtSecretKey);
             return res.json({ success: true, alert: "admin loggin successfully" });
         }
 
@@ -150,6 +144,8 @@ const updateCart = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 };
+
+
 
 const uncartItem = async (req, res) => {
     const { email: userEmail, id } = req.body;
@@ -343,63 +339,59 @@ const makePayment = async (req, res) => {
         const razorpay = new Razorpay({
             key_id: "rzp_test_JorS0iNRvZWc0T",
             key_secret: "hT8woY5skBF0E7nPM6CZp6Wk"
-        })
-        const options = req.body
-        console.log('pay', req.body)
-        const order = await razorpay.orders.create(options)
+        });
+
+        const { amount, currency } = req.body; // Extract only required fields
+        const options = {
+            amount: amount * 100, // Amount in paise
+            currency: currency,
+            receipt: `receipt_order_${Math.random().toString(36).substring(7)}`
+        };
+
+        const order = await razorpay.orders.create(options);
         if (!order) {
-            return res.status(404).send("error")
+            console.error('Failed to create Razorpay order.');
+            return res.status(404).send("Error in creating order");
         }
-        res.json(order)
+
+        res.json(order);
     } catch (error) {
-        console.log(error)
+        console.error('Error creating Razorpay order:', error);
+        res.status(500).send("Internal Server Error");
     }
-}
-
-// const Validatepayment = async (req, res) => {
-//     try {
-//         const { razorpay_order_id, razorpay_payment_id, razorpay_signature
-//         } = req.body
-
-//         const sha = crypto.createHmac('sha256', process.env.Razorpay_SECRET_KEY)
-//         sha.update(`${razorpay_order_id}|${razorpay_payment_id}`)
-
-//         const digest = sha.digest("hex")
-
-//         if (digest !== razorpay_signature) {
-//             return res.status(400).json({ message: "Transaction is legit" })
-//         }
-//         res.json({
-//             message: "success",
-//             orderId: razorpay_order_id,
-//             paymentId: razorpay_payment_id
-//         })
-//     } catch (error) {
-//     }
-// }
+};
 
 const Validatepayment = async (req, res) => {
     try {
-        const { paymentId } = req.body;
-        const order = await Order.findOne({ 'products.paymentId': paymentId });
-        console.log("order",order,paymentId);
+        const { paymentId, deliveryAddress, orderId, signature, products, payable, email, totalAmount } = req.body;
+        let order = await Order.findOne({ paymentId: paymentId });
         if (!order) {
-          return res.status(404).json({ error: 'Order not found' });
+            
+            order = new Order({
+                paymentId,
+                deliveryAddress,
+                orderId,
+                products,
+                payable,
+                totalAmount,
+                email,
+                status: 'Completed',
+                paymentStatus: 'Paid'
+            });
+            await order.save();
+        } else {
+            // Update existing order status
+            order.paymentStatus = 'Paid';
+            order.status = 'Completed';
+            await order.save();
         }
-        order.paymentStatus = 'Paid';
-        order.status = 'Completed';
-    
-        await order.save();
-    
-        res.json({ message: 'Payment validated successfully',order });
-      } catch (error) {
+
+        res.json({ message: 'Payment validated successfully', order });
+    } catch (error) {
         console.error('Error validating payment:', error);
         res.status(500).json({ error: 'Internal server error' });
-      }
     }
-
-
-
+};
 
 const addAddress = async (req, res) => {
     try {
@@ -503,58 +495,63 @@ const deleteAddress = async (req, res) => {
         res.status(500).json({ message: "Unable to delete address", error: error.message });
     }
 };
-
-
 const saveOrder = async (req, res) => {
     try {
-        const { email, name, address, pin, phone, payment, products, date, status, paymentStatus } = req.body;
+        const { email, name, address, pin, city, area, phone, payment, products, date, status, paymentStatus } = req.body;
+        console.log("orderdata", req.body);
 
-        console.log("orderdata",req.body);
-        
-        // Create new order object
+        // Validate that each product has the necessary fields
+        const orderProducts = products.map(product => {
+            if (!product.name) {
+                throw new Error(`Product with ID ${product.productId} is missing a name`);
+            }
+            return {
+                productId: product.id,
+                name: product.name,
+                quantity: product.quantity,
+                price: product.price
+            };
+        });
+
         const order = new Order({
             email,
-            deliveryaddress: { name, address, pin, phone },
+            deliveryAddress: { name, address, pin, phone, city, area },
             payable: payment,
-            products,
+            products: orderProducts,
             date,
             status,
             paymentStatus
         });
-        
-        // Save the order to MongoDB
-        await order.save();
 
-        // Update the order status and payment status
+        await order.save();
         await Order.findOneAndUpdate(
-            { email: email, date: date }, // Query to find the specific order
-            { status: "success", paymentStatus: "success" }, // Update fields
-            { new: true } // Option to return the modified document
+            { email, date },
+            { status: "success", paymentStatus: "success" },
+            { new: true }
         );
 
-        // Send success response
         res.status(200).json({ success: true, message: "Order saved successfully" });
     } catch (error) {
         console.error("Error saving order:", error);
-        res.status(500).json({ success: false, error: "An error occurred while saving the order" });
+        res.status(500).json({ success: false, error: error.message });
     }
 };
 
 
 const getOrder = async (req, res) => {
     try {
-      const { email } = req.body;
-      const orders = await Order.find({ email }).sort({ date: -1 }); // sorting by date in descending order
-      console.log("Fetched Orders:", orders); 
-      res.status(200).json({ success: true, orders });
+        const { email } = req.body;
+        const orders = await Order.find({ email }).sort({ date: -1 }); // sorting by date in descending order
+        console.log("Fetched Orders:", orders);
+        res.status(200).json({ success: true, orders });
     } catch (error) {
-      console.error("Error fetching orders:", error);
-      res.status(500).json({ success: false, error: "An error occurred while fetching the orders" });
+        console.error("Error fetching orders:", error);
+        res.status(500).json({ success: false, error: "An error occurred while fetching the orders" });
     }
-  };
-  
-  const Orderstatus= async(req,res)=>{
-  const { orderId, status, paymentStatus } = req.body;
+};
+
+const Orderstatus = async (req, res) => {
+    const { orderId, status, paymentStatus } = req.body;
     try {
         const order = await Order.findById(orderId);
         if (!order) {

@@ -34,6 +34,5 @@ router.post('/getorder',usercontrol.getOrder)
 router.post('/orderstatus',usercontrol.Orderstatus)
 
 
-
 module.exports = router
 

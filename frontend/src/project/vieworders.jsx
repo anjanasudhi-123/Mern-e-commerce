@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Container } from 'react-bootstrap';
+import { Table, Container, Row, Col } from 'react-bootstrap';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './nav.css';
 
-function ViewOrders(props) { 
+
+function ViewOrders(props) {
   const { paymentStatus } = props;
   const [orders, setOrders] = useState([]);
   const userEmail = localStorage.getItem('userEmail');
@@ -25,7 +28,7 @@ function ViewOrders(props) {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(date).toLocaleDateString(undefined, options);
   };
-  
+
   const groupOrdersByDate = (orders) => {
     return orders.reduce((groupedOrders, order) => {
       const orderDate = formatDate(order.date || new Date());
@@ -39,10 +42,15 @@ function ViewOrders(props) {
 
   const groupedOrders = groupOrdersByDate(orders);
 
-  console.log("grouped",groupedOrders);
+  console.log("grouped", groupedOrders);
 
   return (
     <Container className='ordersummary'>
+      <div className="justify-content-between align-items-center mb-4">
+        <div className="text-right">
+          <Link to="/collections">Back</Link>
+        </div>
+      </div>
       {paymentStatus === 'Success' && (
         <div className="alert alert-success" role="alert">
           Payment successful! Thank you for your order.
@@ -68,20 +76,20 @@ function ViewOrders(props) {
                 </tr>
               </thead>
               <tbody>
-                {groupedOrders[date].map((order, orderIndex) => 
+                {groupedOrders[date].map((order, orderIndex) =>
                   <tr key={orderIndex}>
                     <td>
-                      {order.products && order.products.map((product, productIndex) => 
+                      {order.products && order.products.map((product, productIndex) =>
                         <div key={product.productId || productIndex}>
                           {product.name} x{product.quantity}
                         </div>
-                      ) }
+                      )}
                     </td>
                     <td>
-                      {order.deliveryaddress ? (
+                      {order.deliveryAddress ? (
                         <>
-                          {order.deliveryaddress.name}, {order.deliveryaddress.address}, {order.deliveryaddress.area}, {order.deliveryaddress.city},
-                          {order.deliveryaddress.pin}, {order.deliveryaddress.phone}
+                          {order.deliveryAddress.name}, {order.deliveryAddress.address}, {order.deliveryAddress.area}, {order.deliveryAddress.city},
+                          {order.deliveryAddress.pin}, {order.deliveryAddress.phone}
                         </>
                       ) : 'No address'}
                     </td>
