@@ -9,7 +9,7 @@ function AboutUs() {
             <div className="about-us-container">
                 <div className="about-us-content">
                     <img src="https://i.pinimg.com/originals/08/06/3c/08063c2bb392aa9cc1931e28cefb6408.jpg" alt="About Us" />
-                    <h5 className="text-uppercase luxehaven-heading">LuxeHaven</h5>
+                    <h5 className="text luxehaven-heading">LuxeHaven</h5>
                     <p>
                         Welcome to LuxeHaven, your ultimate destination for luxury shopping. We offer a curated collection of high-end products from top brands, ensuring quality and exclusivity.
                         Our mission is to provide you with a seamless shopping experience and exceptional customer service. Explore our diverse range of products and indulge in the finest selection

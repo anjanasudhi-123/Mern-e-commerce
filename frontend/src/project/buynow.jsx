@@ -132,6 +132,7 @@ export default function Buynow() {
           }
           return {
             productId: product._id,
+            image:product.image,
             name: product.name,
             quantity: cartItem.quantity || 1,
             price: product.price || 0,
@@ -148,7 +149,6 @@ export default function Buynow() {
         })
         .catch(error => {
           console.error('Error saving order:', error);
-          alert('Failed to save order. Please try again.');
         });
     } else {
       alert('Selected address not found.');
@@ -201,6 +201,7 @@ export default function Buynow() {
       return {
         productId: product._id,
         name: product.name,
+        image:product.image,
         quantity: cartItem.quantity || 1,
         price: product.price || 0,
       };

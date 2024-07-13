@@ -7,19 +7,17 @@ const bcrypt = require('bcryptjs')
 const Razorpay = require('razorpay')
 const jwtSecretKey = "plmn123"
 
-
 const createuser = async (req, res) => {
-    let hashedpassword = await bcrypt.hash(req.body.password, 10)
+    let hashedpassword = await bcrypt.hash(req.body.password, 10);
     try {
-        const user = new User({ email: req.body.email, password: hashedpassword })
-        await user.save()
-        res.json({ success: true })
+        const user = new User({ email: req.body.email, password: hashedpassword });
+        await user.save();
+        res.json({ success: true });
     } catch (error) {
-        console.log(error)
-        res.json({ success: false })
+        console.log(error);
+        res.status(400).json({ success: false, message: error.message });
     }
 }
-
 
 
 const loginuser = async (req, res) => {
@@ -363,7 +361,7 @@ const makePayment = async (req, res) => {
 
 const Validatepayment = async (req, res) => {
     try {
-        const { paymentId, deliveryAddress, orderId, signature, products, payable, email, totalAmount } = req.body;
+        const { paymentId, deliveryAddress, orderId, signature, products, payable, email, totalAmount,image } = req.body;
         let order = await Order.findOne({ paymentId: paymentId });
         if (!order) {
             
@@ -372,6 +370,7 @@ const Validatepayment = async (req, res) => {
                 deliveryAddress,
                 orderId,
                 products,
+                image,
                 payable,
                 totalAmount,
                 email,
@@ -497,7 +496,7 @@ const deleteAddress = async (req, res) => {
 };
 const saveOrder = async (req, res) => {
     try {
-        const { email, name, address, pin, city, area, phone, payment, products, date, status, paymentStatus } = req.body;
+        const { email, name,image, address, pin, city, area, phone, payment, products, date, status, paymentStatus } = req.body;
         console.log("orderdata", req.body);
 
         // Validate that each product has the necessary fields
@@ -507,6 +506,7 @@ const saveOrder = async (req, res) => {
             }
             return {
                 productId: product.id,
+                image:product.image,
                 name: product.name,
                 quantity: product.quantity,
                 price: product.price

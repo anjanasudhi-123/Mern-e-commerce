@@ -57,7 +57,7 @@ function Navbar(props) {
                     quantity: 1
                 };
                 const response = await axios.post(`http://localhost:4400/api/user/like`, requestData);
-                setLike([...like, { id: item._id, quantity: 1 }]);
+                // setLike([...like, { id: item._id, quantity: 1 }]);
                 alert("product liked!");
             } catch (error) {
                 console.log(error);
@@ -82,7 +82,7 @@ function Navbar(props) {
                     quantity: 1
                 };
                 const response = await axios.post(`http://localhost:4400/api/user/addtocart`, requestData);
-                setCart([...cart, { id: item._id, quantity: 1 }]);
+                // setCart([...cart, { id: item._id, quantity: 1 }]);
                 alert("Product added to cart successfully!");
             } catch (error) {
                 console.log(error);

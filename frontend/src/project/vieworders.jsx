@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Container, Row, Col } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
+import { Table, Container, Row, Col, Alert, Button } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import './nav.css';
-
 
 function ViewOrders(props) {
   const { paymentStatus } = props;
@@ -46,27 +45,27 @@ function ViewOrders(props) {
 
   return (
     <Container className='ordersummary'>
-      <div className="justify-content-between align-items-center mb-4">
-        <div className="text-right">
-          <Link to="/collections">Back</Link>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <div className='btnback'>
+          <Link to="/collections" className="btn btn-outline-secondary">Back</Link>
         </div>
       </div>
       {paymentStatus === 'Success' && (
-        <div className="alert alert-success" role="alert">
+        <Alert variant="success">
           Payment successful! Thank you for your order.
-        </div>
+        </Alert>
       )}
 
       {orders.length === 0 ? (
         <div className="text-center mt-4">
-          <h2>No orders yet !!</h2>
+          <h2>No orders yet!</h2>
         </div>
       ) : (
         Object.keys(groupedOrders).map((date, index) => (
           <div key={index}>
-            <h2 className="text-center mt-4">{date}</h2>
-            <Table striped bordered hover className="table-centered">
-              <thead>
+            <h2 className="">{date}</h2>
+            <Table  className="table table-hover">
+              <thead className="">
                 <tr>
                   <th>Product Details</th>
                   <th>Delivery Address</th>
@@ -80,17 +79,22 @@ function ViewOrders(props) {
                   <tr key={orderIndex}>
                     <td>
                       {order.products && order.products.map((product, productIndex) =>
-                        <div key={product.productId || productIndex}>
-                          {product.name} x{product.quantity}
+                        <div key={product.productId || productIndex} className="d-flex align-items-center mb-2">
+                          <img src={product.image} alt={product.name} className="img-thumbnail" style={{ width: '90px', height: '150px', marginRight: '10px' }} />
+                          <div>
+                            {product.name} ({product.quantity})
+                          </div>
                         </div>
                       )}
                     </td>
                     <td>
                       {order.deliveryAddress ? (
-                        <>
-                          {order.deliveryAddress.name}, {order.deliveryAddress.address}, {order.deliveryAddress.area}, {order.deliveryAddress.city},
-                          {order.deliveryAddress.pin}, {order.deliveryAddress.phone}
-                        </>
+                        <div>
+                          {order.deliveryAddress.name}<br />
+                          {order.deliveryAddress.address}, {order.deliveryAddress.area}<br />
+                          {order.deliveryAddress.city}, {order.deliveryAddress.pin}<br />
+                          {order.deliveryAddress.phone}
+                        </div>
                       ) : 'No address'}
                     </td>
                     <td>₹{order.products.reduce((total, prod) => total + prod.price * prod.quantity, 0)}</td>

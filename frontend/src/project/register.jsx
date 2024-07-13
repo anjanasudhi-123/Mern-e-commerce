@@ -1,100 +1,72 @@
-import React, { useContext, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Mycontext } from "./Newcont";
-import { useNavigate } from 'react-router-dom';
-import './nav.css'
-import axios from 'axios'
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { GoPerson } from 'react-icons/go';
+import { MdLockOpen } from 'react-icons/md';
+import { BsFacebook } from 'react-icons/bs';
+import { FaInstagram } from 'react-icons/fa';
+import { FcGoogle } from 'react-icons/fc';
+import { Container, Row, Col, Form, Button, Alert, InputGroup, FormControl } from 'react-bootstrap';
+import axios from 'axios';
+import './nav.css';  // Ensure your CSS file does not conflict with Bootstrap
 
-function Registerpage() {
-    const [inputemail, setinputemail] = useState("");
-    const [password, setPassword] = useState("");
-    const { store, setstore } = useContext(Mycontext);
-    const { loguser, setloguser } = useContext(Mycontext);
-    const [email, setemail] = useState("");
-    const [message, setmessage] = useState("");
-    const navigate = useNavigate()
+function RegisterPage() {
+  const [inputemail, setinputemail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setmessage] = useState("");
+  const navigate = useNavigate();
 
-    const emailvalidation = () => {
-        const refer = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
-        if (refer.test(email)) {
-            alert("Email is valid");
-        } else {
-            alert("Please enter a valid email!");
-        }
-    };
-    const StrongPassword = (password) => {
-        if (!password) return false;
-        const pattern = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/;
-        return pattern.test(password);
-    };
+  const registerUser = async () => {
+    try {
+      const response = await axios.post('http://localhost:4400/api/user/register', { email: inputemail, password });
+      if (response.data.success) {
+        alert("Registration successful! Please log in.");
+        navigate("/login");
+      } else {
+        setmessage("Registration failed. Please check your details.");
+      }
+    } catch (error) {
+      console.log(error);
+      setmessage("Registration failed. Please check your details.");
+    }
+  };
 
-
-    const Add = () => {
-        const refer = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
-        if (!refer.test(inputemail)) {
-            alert("Please enter a valid email!");
-            return;
-        }
-        if (!StrongPassword(password)) {
-            alert("Please use a strong password (at least 8 characters with first letter capital..)!");
-            return;
-        }
-
-        axios.post('http://localhost:4400/api/user/register', { email: inputemail, password })
-            .then(response => {
-                console.log(response.data);
-                if (response.data.success) {
-                    alert("Successfully registered");
-                    setinputemail("");
-                    setPassword("");
-                    navigate("/login");
-                } else {
-                    alert("Registration failed");
-                }
-            })
-            .catch(error => {
-                console.error('Error registering:', error);
-                alert("An error occurred during registration");
-            });
-    };
-
-
-
-    return (
-
-        <div className="containers">
-             <div className="imag-container">
-                <img src="https://img.freepik.com/free-vector/face-recognition-personal-identification-secure-access-profile-entry-data-storage-opening-female-account-holder-cartoon-character-vector-isolated-concept-metaphor-illustration_335657-2852.jpg" alt="Registration Image" width={300} />
-            </div>
-            <div className="reg">
-                <input
-                    type="email"
-                    placeholder="Enter email here"
-                    value={inputemail}
-                    onChange={(e) => setinputemail(e.target.value)}
-                />
-                <br></br>
-                <br></br>
-                <input
-                    type="password"
-                    placeholder="Your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-                <br></br>
-                <br></br>
-                <button type="button" class="btn btn-primary" onClick={Add}>
-                    Register
-                </button>
-                <p>
-                    Account already exists! <Link to={"/login"}>Login here</Link>
-                </p>
-            </div>
-           
-        </div>
-
-    );
+  return (
+    <Container className="register-container d-flex justify-content-center align-items-center vh-100">
+      <Row className="w-100">
+        <Col md={6} className="d-flex flex-column justify-content-center align-items-center bg-light p-4">
+          <div className="text-content text-center mb-4 ">
+            <h1>Luxehaven</h1>
+            <p>Welcome back !!</p>
+            <Link to="/login">
+              <Button variant="outline">Login</Button>
+            </Link>
+          </div>
+        </Col>
+        <Col md={6} className="d-flex flex-column justify-content-center align-items-center">
+          <h3>Create an account</h3>
+          <div className="icons-container my-3">
+            <BsFacebook size={20} className="icon" />
+            <FaInstagram size={20} className="icon mx-3" />
+            <FcGoogle size={20} className="icon" />
+          </div>
+          <hr className="w-100 my-3" />
+          <p className="text-center w-100">or</p>
+          <Form className="w-100">
+            <InputGroup className="mb-3">
+              <InputGroup.Text><GoPerson /></InputGroup.Text>
+              <FormControl type="email" placeholder="Enter email here" value={inputemail} onChange={(e) => setinputemail(e.target.value)} required />
+            </InputGroup>
+            <InputGroup className="mb-3">
+              <InputGroup.Text><MdLockOpen /></InputGroup.Text>
+              <FormControl type="password" placeholder="Your password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            </InputGroup>
+            <Button type="button" className="btn btn-outline-info w-20" onClick={registerUser}>Register</Button>
+          </Form>
+          {message && <Alert variant="danger" className="mt-3">{message}</Alert>}
+        </Col>
+      </Row>
+    </Container>
+  );
 }
 
-
-export default Registerpage;
+export default RegisterPage;

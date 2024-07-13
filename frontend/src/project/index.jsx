@@ -22,7 +22,7 @@ function Frontpage() {
 
                <div className='topimage'>
                     <div class='slide'>
-                         <img src="https://www.sliderrevolution.com/wp-content/uploads/revslider/fashion3.jpg" alt="Image 1"></img>
+                         <img src="https://media.texaslifestylemag.com/wp-content/uploads/2018/06/04215216/Mi-Golondrina-dresses1_cover-e1530291397597.jpg" alt="Image 1"></img>
                     </div>
                     <div className='top-button'>
                          <Link to={"/collections"}>SHOP NOW</Link>
@@ -54,7 +54,7 @@ function Frontpage() {
             <div className="container">
                 <div className="row">
                     <div className="col-md-4">
-                        <h5 className="text-uppercase">LuxeHaven</h5>
+                        <h5 className="text">LuxeHaven</h5>
                         <p>
                             Welcome to LuxeHaven,
                              your ultimate destination for luxury shopping. 

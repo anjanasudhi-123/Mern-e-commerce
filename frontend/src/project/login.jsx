@@ -1,105 +1,111 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { GoPerson } from 'react-icons/go';
+import { MdLockOpen } from 'react-icons/md';
+import { BsFacebook } from "react-icons/bs";
+import { FaInstagram } from "react-icons/fa6";
+import { FcGoogle } from "react-icons/fc";
+
+import { Container, Row, Col, Form, Button, Alert, InputGroup, FormControl } from 'react-bootstrap';
 import { Mycontext } from "./Newcont";
-import axios from 'axios'
+import axios from 'axios';
+import './nav.css';
 
 function Loginpage() {
   const [inputemail, setinputemail] = useState("");
   const [password, setPassword] = useState("");
-  const { store, loggeduser, setloggeduser, cart, setCart, setLikeitem, likeitem, logoutUser, setlogoutUser, blockUser, setblockUser, bannedUsers,
-                                                                   setBannedUsers, ban, setban,setstore} = useContext(Mycontext);
+  const { store, setstore, setloggeduser, setCart, setLikeitem } = useContext(Mycontext);
   const [message, setmessage] = useState("");
-  const [logoutUserState, setLogoutUser] = useState(false);
   const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   if (logoutUserState) {
-  //     handleLogout();
-  //   }
-  // }, [logoutUserState]);
-
   const handleLogout = () => {
     setloggeduser(null);
     setCart([]);
     setLikeitem([]);
-    localStorage.removeItem("userEmail"); 
+    localStorage.removeItem("userEmail");
     localStorage.removeItem("authToken");
     alert("Logout successful!");
     navigate("/");
     window.location.reload()
   };
-  
+
 
   const loginUser = async () => {
     axios.post('http://localhost:4400/api/user/login', { email: inputemail, password })
       .then(response => {
-        
-        const userData = response.data; 
+
+        const userData = response.data;
         if (inputemail === "admin@gmail.com" && password === "Admin123") {
           setloggeduser('admin');
           alert("Logged in as admin!");
           navigate("/addproduct")
         } else {
-          setstore([...store,userData])
+          setstore([...store, userData])
           setloggeduser(userData);
           alert(" User Logged in successfully!");
-          navigate("/")
+          navigate("/collection")
         }
-        
+
       })
       .catch(error => {
         console.error('Login failed:', error);
         setmessage("Login failed. Please check your credentials.");
       });
 
-      try {
-       const response= await axios.post('http://localhost:4400/api/user/login', { email: inputemail, password })
+    try {
+      const response = await axios.post('http://localhost:4400/api/user/login', { email: inputemail, password })
 
-       console.log("login",response.data);
-       const userData = response.data; 
-       localStorage.setItem("authToken",response.data.authToken)
-       localStorage.setItem("userEmail",response.data.user.email)
-       localStorage.setItem("userId",response.data.user._id)
-       setstore([...store,userData])
-          setloggeduser(userData);
-          // alert("Login successful!")
-       navigate("/");
+      console.log("login", response.data);
+      const userData = response.data;
+      localStorage.setItem("authToken", response.data.authToken)
+      localStorage.setItem("userEmail", response.data.user.email)
+      localStorage.setItem("userId", response.data.user._id)
+      setstore([...store, userData])
+      setloggeduser(userData);
+      alert("Login successful!")
+      navigate("/collections");
 
-      } catch (error) {
-        console.log(error);
-      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // console.log("logged",loggeduser);
 
-  return (
-    <div className="locontainers">
-      <div className="login">
-        <img src="https://png.pngtree.com/png-vector/20191110/ourmid/pngtree-avatar-icon-profile-icon-member-login-vector-isolated-png-image_1978396.jpg" width={80}></img>
-        <input
-          type="email"
-          placeholder="Enter email here"
-          value={inputemail}
-          onChange={(e) => setinputemail(e.target.value)}
-        />
-        <br></br>
-        <br></br>
-        <input
-          type="password"
-          placeholder="Your password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <br></br>
-        <br></br>
-        <button type="button" className="btn btn-primary" onClick={loginUser}>Login</button>
 
-        <p>
-          Don't have an account? <Link to={"/register"}>Register here</Link>
-        </p>
-        {message && <p className="error-message">{message}</p>}
-      </div>
-    </div>
+  return (
+    <Container className="locontainers d-flex justify-content-center align-items-center vh-100">
+      <Row className="w-100">
+        <Col md={6} className="d-flex flex-column justify-content-center align-items-center">
+          <h3>Login to your account</h3>
+          <div className="icons-container my-3">
+            <BsFacebook size={20} className="icon" />
+            <FaInstagram size={20} className="icon mx-3" />
+            <FcGoogle size={20} className="icon" />
+          </div>
+          <hr className="w-100 my-3 " />
+          <p className="text-center w-100">or</p>
+          <form className="w-100">
+            <InputGroup className="mb-3">
+              <InputGroup.Text><GoPerson /></InputGroup.Text>
+              <FormControl type="email" placeholder="Enter email here" value={inputemail} onChange={(e) => setinputemail(e.target.value)} />
+            </InputGroup>
+            <InputGroup className="mb-3">
+              <InputGroup.Text><MdLockOpen /></InputGroup.Text>
+              <FormControl type="password" placeholder="Your password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            </InputGroup>
+            <Button type="button" className="outline w-20" onClick={loginUser}>Login</Button>
+          </form>
+          {message && <Alert variant="danger" className="mt-3">{message}</Alert>}
+        </Col>
+        <Col md={6} className="d-flex flex-column justify-content-center align-items-center bg-light p-4">
+          <h3>Are you new??</h3>
+          <p>Sign up and discover our new collections !!</p>
+          <Link to="/register">
+            <Button variant="outline" className="mt-2">Sign up</Button>
+          </Link>
+        </Col>
+      </Row>
+    </Container>
   );
 }
 

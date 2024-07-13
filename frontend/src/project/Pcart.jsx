@@ -119,8 +119,8 @@ function Pcart() {
       <Heading />
       <div className="container mt-4">
         {cart.length === 0 ? (
-        <h2>Cart is emptyy !!</h2>
-      ) : (
+                <img src="https://i.pinimg.com/736x/1d/26/ce/1d26cefaf3331a4eb7169c7315dfb853.jpg" width="350px"></img>
+              ) : (
           <>
             <Table table-light>
               <thead>

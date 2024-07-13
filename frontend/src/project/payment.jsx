@@ -80,6 +80,7 @@ function Payment() {
         payment: payable,
         products: products.map(product => ({
           productId: product._id,
+          image:product.image,
           name: product.name,
           quantity: product.quantity,
           price: product.price
@@ -178,10 +179,9 @@ function Payment() {
     }
 
     try {
-      // Send only the necessary fields to the backend
       const orderResponse = await axios.post('http://localhost:4400/api/user/makepayment', {
-        amount: payable, // Amount should be in the smallest currency unit (e.g., paise for INR)
-        currency: 'INR' // Or any other currency you are using
+        amount: payable, 
+        currency: 'INR'
       });
 
       if (!orderResponse.data || !orderResponse.data.id) {
