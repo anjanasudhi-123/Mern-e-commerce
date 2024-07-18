@@ -1,6 +1,8 @@
 const { User } = require('../models/usermodel')
 const Product = require('../models/productmodel')
 const Order = require('../models/summarymodel')
+const { Cart } = require('../models/cartmodel');
+
 
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
@@ -52,45 +54,48 @@ const addToCart = async (req, res) => {
         const { email, id, quantity } = req.body;
 
         if (!email || !id || !quantity) {
+            console.error("Missing required fields. Email:", email, "ID:", id, "Quantity:", quantity);
             return res.status(400).json({ success: false, error: "Missing required fields" });
         }
 
         const user = await User.findOne({ email });
+        console.log("User found:", user);
 
         if (!user) {
+            console.error("User not found for email:", email);
             return res.status(404).json({ success: false, error: "User not found" });
         }
 
         const product = await Product.findById(id);
+        console.log("Product found:", product);
 
         if (!product) {
+            console.error("Product not found for ID:", id);
             return res.status(404).json({ success: false, error: "Product not found" });
         }
 
         const existingItem = user.cart.find(item => item.id === id);
+        console.log("Existing item in cart:", existingItem);
 
         if (existingItem) {
-
             existingItem.quantity += quantity;
             existingItem.price += product.price * quantity;
+            console.log("Updated existing item:", existingItem);
         } else {
-
             const totalprice = product.price * quantity;
-            user.cart.push({ id, quantity, price: product.price * quantity });
+            user.cart.push({ id, quantity, price: totalprice });
+            console.log("Added new item to cart:", { id, quantity, price: totalprice });
         }
 
         await user.save();
+        console.log("User cart after adding product:", user.cart);
+
         res.status(200).json({ success: true, user, message: "Product added to cart successfully" });
     } catch (error) {
         console.error("Error adding product to cart:", error);
         res.status(500).json({ success: false, error: "An error occurred while adding product to cart" });
     }
 };
-
-
-
-
-
 
 
 const cartData = async (req, res) => {
@@ -330,6 +335,26 @@ const updatelike = async (req, res) => {
         res.status(500).json({ success: false, error: "An error occurred while updating like status" });
     }
 };
+   
+
+const unlikeall=async(req,res)=>{
+    const { email } = req.body;
+    try {
+      const user = await User.findOne({ email: email });
+      if (!user) {
+        return res.status(404).json({ success: false, error: 'User not found' });
+      }
+      user.likes = [];
+      await user.save();
+      res.json({ success: true, message: 'All liked items cleared successfully' });
+    } catch (error) {
+      console.error('Error clearing liked items:', error);
+      res.status(500).json({ success: false, error: 'Internal server error' });
+    }
+  };
+
+
+
 
 
 const makePayment = async (req, res) => {
@@ -541,7 +566,7 @@ const saveOrder = async (req, res) => {
 const getOrder = async (req, res) => {
     try {
         const { email } = req.body;
-        const orders = await Order.find({ email }).sort({ date: -1 }); // sorting by date in descending order
+        const orders = await Order.find({ email }).sort({ date: -1 }); 
         console.log("Fetched Orders:", orders);
         res.status(200).json({ success: true, orders });
     } catch (error) {
@@ -567,8 +592,55 @@ const Orderstatus = async (req, res) => {
 
 
 }
+const clearCart = async (req, res) => {
+    try {
+        const { email } = req.body;
+        console.log("clearCart request received for email:", email);
+
+        const user = await User.findOne({ email });
+        console.log("User found:", user);
+
+        if (!user) {
+            console.error("User not found for email:", email);
+            return res.status(404).json({ success: false, error: 'User not found' });
+        }
+
+        user.cart = [];
+        console.log("User's cart before clearing:", user.cart);
+
+        await user.save();
+        console.log("User's cart after clearing:", user.cart);
+
+        res.json({ success: true, message: 'Cart cleared successfully' });
+        console.log("clearCart response sent successfully");
+    } catch (error) {
+        console.error('Error clearing cart:', error);
+        res.status(500).json({ success: false, error: 'Internal server error' });
+    }
+};
 
 
+
+const clearselecteditems = async(req,res)=>{
+    const { email, selectedProductIds } = req.body;
+
+    try {
+      const user = await User.findOne({ email });
+  
+      if (!user) {
+        return res.status(404).json({ success: false, error: 'User not found' });
+      }
+  
+      user.cart = user.cart.filter(item => !selectedProductIds.includes(item.id));
+  
+      await user.save();
+  
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Error clearing selected items from cart:', error);
+      res.status(500).json({ success: false, error: 'Server error' });
+    }
+}
 
 
 
@@ -596,6 +668,8 @@ module.exports = {
     deleteAddress,
     saveOrder,
     getOrder,
-    Orderstatus
-
+    Orderstatus,
+    clearCart,
+    clearselecteditems,
+    unlikeall
 }

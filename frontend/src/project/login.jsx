@@ -61,7 +61,7 @@ function Loginpage() {
       localStorage.setItem("userId", response.data.user._id)
       setstore([...store, userData])
       setloggeduser(userData);
-      alert("Login successful!")
+      // alert("Login successful!")
       navigate("/collections");
 
     } catch (error) {

@@ -6,12 +6,13 @@ import axios from 'axios';
 
 export default function Buynow() {
   const nav = useNavigate();
-  const { productData, cart } = useContext(Mycontext);
+  const { productData } = useContext(Mycontext);
   const [totalAmount, setTotalAmount] = useState(0);
   const [selectaddress, setSelectAddress] = useState(null);
   const [editIndex, setEditIndex] = useState(null);
   const userEmail = localStorage.getItem("userEmail");
   const [products, setProducts] = useState([]);
+  const [cart, setCart] = useState([]);
   const [form, setForm] = useState({
     name: '',
     address: '',
@@ -94,6 +95,31 @@ export default function Buynow() {
         console.error("Error deleting address:", error);
       });
   };
+
+
+  const clearCart = async (productIds = []) => {
+    try {
+      const response = await axios.post("http://localhost:4400/api/user/removeFromcart", {
+        email: userEmail,
+        ids: productIds,
+      });
+  
+      if (response.data.success) {
+        const updatedCart = cart.filter((item) => !productIds.includes(item.id));
+        setCart(updatedCart);
+        console.log("Selected products removed successfully");
+      } else {
+        console.log("Failed to remove selected products:", response.data.error);
+      }
+    } catch (error) {
+      console.error("Error removing selected products from cart:", error);
+    }
+  };
+  
+
+
+
+
 
   const calculatePayable = () => {
     let total = 0;
@@ -250,6 +276,11 @@ export default function Buynow() {
             setOrderData(validateResponse.data.order);
 
             handleSuccessfulPayment();
+
+
+            const productIdsToRemove = products.map(product => product.productId);
+            await clearCart(productIdsToRemove);
+
             nav('/Paid', { state: { selectaddress, totalAmount, products, orderData: validateResponse.data.order } });
           } catch (error) {
             console.error('Error validating payment:', error);
@@ -280,6 +311,29 @@ export default function Buynow() {
   const handleSuccessfulPayment = () => {
     setPaymentStatus('Success');
   };
+
+  const clearCartAfterPurchase = async () => {
+    try {
+      const response = await axios.post('http://localhost:4400/api/user/clearselectitems', {
+        email: userEmail,
+        selectedProductIds: cartFromState.map(item => item._id),
+      });
+
+      if (response.data.success) {
+        setCart([]);
+        nav('');
+      } else {
+        console.error('Failed to clear selected items from cart:', response.data.error);
+      }
+    } catch (error) {
+      console.error('Error clearing selected items from cart:', error);
+    }
+  };
+
+
+
+
+
 
   return (
     <div className='buynow'>
@@ -340,19 +394,19 @@ export default function Buynow() {
         )}
       </div>
       {selectaddress !== null && (
-        <div className='selected-address-details'>
-          <h4>Address to Deliver:</h4>
-          <p><strong>{savedAddress[selectaddress].name},</strong></p>
-          <p><strong>{savedAddress[selectaddress].address},</strong></p>
-          <p><strong>{savedAddress[selectaddress].area},</strong></p>
-          <p><strong>{savedAddress[selectaddress].pin},</strong></p>
-          <p><strong>{savedAddress[selectaddress].city},</strong></p>
-          <p><strong>{savedAddress[selectaddress].phone}</strong></p>
+        <div className='selected-address-details bg-light p-3 rounded shadow-sm'>
+          <h4>Address to Deliver : </h4>
+          <p><strong>{savedAddress[selectaddress].name}, </strong></p>
+          <p><strong>{savedAddress[selectaddress].address}, </strong></p>
+          <p><strong>{savedAddress[selectaddress].area}, </strong></p>
+          <p><strong>{savedAddress[selectaddress].pin}, </strong></p>
+          <p><strong>{savedAddress[selectaddress].city}, </strong></p>
+          <p><strong>{savedAddress[selectaddress].phone} </strong></p>
         </div>
       )}
       <div className="row">
         <div className="col-md-5">
-          <Table className="table-light" size="sm">
+          <Table className="table" size="sm">
             <thead>
               <tr>
                 <th style={{ width: '25%' }}>Image</th>

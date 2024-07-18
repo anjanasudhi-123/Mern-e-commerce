@@ -36,6 +36,7 @@ import Customercare from './project/customercare';
 import Payment from './project/payment';
 import Paid from './project/Paid';
 import Vieworders from './project/vieworders';
+import Adminorder from './project/adminorder';
 
 
 
@@ -133,6 +134,7 @@ function App() {
             <Route path="/payment" element={<Payment />} />
             <Route path="/Paid" element={<Paid />} />
             <Route path="/vieworders" element={<Vieworders/>}/>
+            <Route path="/adminorder" element={<Adminorder/>}/>
 
 
           </Routes>

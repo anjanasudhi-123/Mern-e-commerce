@@ -664,5 +664,16 @@ button:hover {
     width: 100%;
   }
   
-  
-  
+ .payment-section h5{
+    font-size: medium;
+    color:black;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+
+ }
+ .row h4{
+    color:black;
+    font-size: medium;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+    
+
+ }

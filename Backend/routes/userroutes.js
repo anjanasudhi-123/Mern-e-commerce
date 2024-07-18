@@ -14,10 +14,15 @@ router.post('/removeFromcart', usercontrol.uncartItem)
 router.post('/addquantity', usercontrol.addQuantity)
 router.post('/removequantity', usercontrol.removeQuantity)
 
+router.post('/clearcart',usercontrol.clearCart)
+router.post('/clearselectitems',usercontrol.clearselecteditems)
+
+
 router.post('/like', usercontrol.likeItem);
 router.post('/likedata', usercontrol.likeData)
 router.post('/updatelike', usercontrol.updatelike)
 router.post('/unlike', usercontrol.unlikeItem)
+router.post('/unlikeall',usercontrol.unlikeall)
 
 router.post('/makepayment', usercontrol.makePayment)
 router.post('/validatepayment', usercontrol.Validatepayment)
@@ -30,8 +35,8 @@ router.delete('/deleteaddress', usercontrol.deleteAddress)
 // router.post('/ordersummary', usercontrol.orderSummery)
 // router.get('/getsummary', usercontrol.getSummary)
 router.post('/saveorder', usercontrol.saveOrder)
-router.post('/getorder',usercontrol.getOrder)
-router.post('/orderstatus',usercontrol.Orderstatus)
+router.post('/getorder', usercontrol.getOrder)
+router.post('/orderstatus', usercontrol.Orderstatus)
 
 
 module.exports = router

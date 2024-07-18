@@ -89,6 +89,21 @@ function Like() {
     }
   };
 
+  const handleClearAllLikes = async () => {
+    try {
+      const response = await axios.post("http://localhost:4400/api/user/unlikeall", { email: userEmail });
+      if (response.data.success) {
+        alert("ok")
+        setLikeitem([]); 
+        console.log("All liked items cleared successfully");
+      } else {
+        console.log("Failed to clear liked items:", response.data.error);
+      }
+    } catch (error) {
+      console.log("Error clearing liked items:", error);
+    }
+  };
+
   const likeIds = like.map((likeItem) => likeItem.id);
   const products = productData.filter((data) => likeIds.includes(data._id.toString()));
   console.log("pro", products, likeIds);
@@ -101,7 +116,9 @@ function Like() {
                 <img src="https://i.pinimg.com/736x/1d/26/ce/1d26cefaf3331a4eb7169c7315dfb853.jpg" width="350px"></img>
               ) : (
         <table className="table table-striped">
-         
+         <div className="text-right mb-2">
+          <button className="btn outline-danger" onClick={handleClearAllLikes}>Unike All</button>
+        </div>
           <tbody>
             {products.map((dat) => (
               <tr key={dat._id}>

@@ -171,6 +171,21 @@ function Payment() {
   const deliveryAddress = selectAddress !== null ? savedAddress[selectAddress] : null;
 
 
+  const clearCart = async () => {
+    try {
+      const response = await axios.post("http://localhost:4400/api/user/clearcart", {
+        email: userEmail,
+      });
+
+      if (response.data.success) {
+        console.log("Cart cleared successfully");
+      } else {
+        console.log("Failed to clear cart:", response.data.error);
+      }
+    } catch (error) {
+      console.error("Error clearing cart:", error);
+    }
+  };
 
   const handlerazorpay = async () => {
     if (!deliveryAddress) {
@@ -222,6 +237,8 @@ function Payment() {
           });
 
           setOrderData(validateResponse.data.order);
+          await clearCart(); 
+
 
           handleSuccessfulPayment();
           nav('/Paid', { state: { deliveryAddress, payable, products, orderData: validateResponse.data.order } });
@@ -314,15 +331,16 @@ function Payment() {
         )}
       </div>
       {deliveryAddress && (
-        <div className='selected-address-details'>
-          <h4>Address to Deliver:</h4>
-          <p><strong>{deliveryAddress.name},</strong></p>
-          <p><strong>{deliveryAddress.address},</strong></p>
-          <p><strong>{deliveryAddress.area},</strong></p>
-          <p><strong>{deliveryAddress.city},</strong></p>
-          <p><strong>{deliveryAddress.pin},</strong></p>
-          <p><strong>{deliveryAddress.phone}</strong></p>
-        </div>
+        <div className='selected-address-details bg-light p-3 rounded shadow-sm'>
+        <h4 className='mb-2'>Address to Deliver : </h4>
+        <p><strong>{deliveryAddress.name}, </strong></p>
+        <p><strong>{deliveryAddress.address}, </strong></p>
+        <p><strong>{deliveryAddress.area}, </strong></p>
+        <p><strong>{deliveryAddress.city}, </strong></p>
+        <p><strong>{deliveryAddress.pin}, </strong></p>
+        <p><strong>{deliveryAddress.phone} </strong></p>
+      </div>
+      
       )}
       <div className="row">
         <div className="col-md-5">

@@ -1,28 +1,39 @@
 const mongoose = require('mongoose');
 
-const combinedSchema = new mongoose.Schema({
+const cartSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-    cart: [{
-        id: {
+    items: [{
+        productId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Product', 
+            ref: 'Product',
             required: true
         },
         quantity: {
             type: Number,
-            required:true
+            required: true
         },
-        price:{
-            type:Number,
-            required:true
+        price: {
+            type: Number,
+            required: true
         }
     }],
+
+});
+
+const Cart = mongoose.model('Cart', cartSchema);
+
+const likeSchema = new mongoose.Schema({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
     likes: [{
-        id: {
+        productId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Product',
             required: true
@@ -34,5 +45,9 @@ const combinedSchema = new mongoose.Schema({
     }]
 });
 
-const CombinedModel = mongoose.model("CombinedModel", combinedSchema);
-module.exports = CombinedModel;
+const Like = mongoose.model('Like', likeSchema);
+
+module.exports = {
+    Cart,
+    Like
+};

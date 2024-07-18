@@ -1,6 +1,8 @@
 // const User = require('../models/usermodel');
 const Product = require('../models/productmodel');
 const {User}= require("../models/usermodel")
+const Order = require('../models/summarymodel')
+
 
 const getProducts = async (req, res) => {
   try {
@@ -145,10 +147,27 @@ const UnBanUser = async (req, res) => {
 
 
 
+const getAllOrders = async (req, res) => {
+  const { email } = req.body;
+  try {
+      let orders;
+      if (email === 'admin@gmail.com') {
+          orders = await Order.find({});
+      } else {
+          orders = await Order.find({ 'deliveryAddress.email': email });
+      }
+      res.json({ orders });
+  } catch (error) {
+      console.error('Error fetching orders:', error);
+      res.status(500).json({ message: 'Server error' });
+  }
+};
 
 
 
-module.exports = { getProducts, updateProduct, deleteProduct, DeleteUser, BanUser, addProduct, Getuser, UnBanUser };
+
+
+module.exports = { getProducts, updateProduct, deleteProduct, DeleteUser, BanUser, addProduct, Getuser, UnBanUser,getAllOrders };
 
 
 
