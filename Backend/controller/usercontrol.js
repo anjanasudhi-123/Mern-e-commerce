@@ -642,6 +642,20 @@ const clearselecteditems = async(req,res)=>{
     }
 }
 
+const trackorder=async(req,res)=>{
+    const { orderId } = req.params;
+    try {
+      const trackingInfo = {
+        orderId: orderId,
+        status: 'In Transit',
+        estimatedDelivery: '2024-08-10'
+      };
+  
+      res.json(trackingInfo);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch tracking information' });
+    }
+}
 
 
 
@@ -671,5 +685,6 @@ module.exports = {
     Orderstatus,
     clearCart,
     clearselecteditems,
-    unlikeall
+    unlikeall,
+    trackorder
 }

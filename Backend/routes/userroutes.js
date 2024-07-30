@@ -37,6 +37,7 @@ router.delete('/deleteaddress', usercontrol.deleteAddress)
 router.post('/saveorder', usercontrol.saveOrder)
 router.post('/getorder', usercontrol.getOrder)
 router.post('/orderstatus', usercontrol.Orderstatus)
+router.get('/trackorder/:orderId',usercontrol.trackorder)
 
 
 module.exports = router

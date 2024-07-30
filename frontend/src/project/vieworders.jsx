@@ -64,7 +64,7 @@ function ViewOrders(props) {
         Object.keys(groupedOrders).map((date, index) => (
           <div key={index}>
             <h2 className="">{date}</h2>
-            <Table  className="table table-hover">
+            <Table className="table table-hover">
               <thead className="">
                 <tr>
                   <th>Product Details</th>
@@ -100,6 +100,9 @@ function ViewOrders(props) {
                     <td>₹{order.products.reduce((total, prod) => total + prod.price * prod.quantity, 0)}</td>
                     <td>{order.status === 'Completed' ? 'Successful' : order.status}</td>
                     <td>{order.paymentStatus === 'Paid' ? 'Successful' : order.paymentStatus}</td>
+                    <Link to={`/Track/${order._id}`}>
+                      <Button variant="outline-dark">Track Now</Button>
+                    </Link>
                   </tr>
                 )}
               </tbody>

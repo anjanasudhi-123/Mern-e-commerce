@@ -146,26 +146,14 @@ const UnBanUser = async (req, res) => {
 }
 
 
-
 const getAllOrders = async (req, res) => {
-  const { email } = req.body;
   try {
-      let orders;
-      if (email === 'admin@gmail.com') {
-          orders = await Order.find({});
-      } else {
-          orders = await Order.find({ 'deliveryAddress.email': email });
-      }
-      res.json({ orders });
-  } catch (error) {
-      console.error('Error fetching orders:', error);
-      res.status(500).json({ message: 'Server error' });
+    const orders = await Order.find();
+    res.json(orders);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
-
-
-
-
 
 module.exports = { getProducts, updateProduct, deleteProduct, DeleteUser, BanUser, addProduct, Getuser, UnBanUser,getAllOrders };
 

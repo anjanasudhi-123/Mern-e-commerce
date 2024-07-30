@@ -19,7 +19,7 @@ function Heading() {
     }, [likeitem]);
 
     function home() {
-        navigate('/collections');
+        navigate('/');
     }
 
     const handleLogout = () => {

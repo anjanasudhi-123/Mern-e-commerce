@@ -1,8 +1,9 @@
 h1 {
     font-family: 'Times New Roman', Times, serif;
-    font-size: 40px; 
-    color:brown
+    font-size: 40px;
+    color: brown
 }
+
 header {
     margin-top: -10px;
 
@@ -14,10 +15,10 @@ header h3 {
     margin-left: 85px;
 }
 
-h2{
+h2 {
     font-size: large;
     font-family: 'Times New Roman', Times, serif;
-    font-weight:700;
+    font-weight: 700;
     color: brown;
 }
 
@@ -80,7 +81,7 @@ p {
 .liked img {
     width: 80px;
     height: 80%;
-} 
+}
 
 h6 {
     margin-top: 50px;
@@ -108,13 +109,15 @@ h6 {
     margin-top: 20px;
     width: 230px;
 }
+
 .logo {
     display: flex;
     align-items: center;
-    margin-right: 10px; 
+    margin-right: 10px;
     font-family: sans-serif;
 }
-.like-item-count{
+
+.like-item-count {
     margin-left: 20px;
 }
 
@@ -128,17 +131,19 @@ h6 {
 .logo .nav-link {
     margin-right: 20px;
 }
-.like-item-count, .cart-item-count {
-    background-color:wheat;
+
+.like-item-count,
+.cart-item-count {
+    background-color: wheat;
     color: black;
-    border-radius:50%;
+    border-radius: 50%;
     padding: 2px 6px;
-    margin-left:-3px;
+    margin-left: -3px;
     font-size: 0.8em;
     margin-top: 1px;
 }
 
-.reg{
+.reg {
     margin-top: 20px;
 }
 
@@ -160,19 +165,21 @@ h6 {
     display: inline-block;
     height: 180px;
 }
+
 .containers {
     display: flex;
-    align-items: center; 
-    width: 600px; 
-    margin: 100px auto; 
+    align-items: center;
+    width: 600px;
+    margin: 100px auto;
     border-radius: 15px;
     padding: 30px;
-    margin-left:20%;
+    margin-left: 20%;
 }
+
 .reg {
     flex: 1;
     margin-right: 10px;
-    
+
 }
 
 
@@ -180,7 +187,8 @@ h6 {
 .containers button {
     background-color: lightblue;
 }
-.locontainers button{
+
+.locontainers button {
     background-color: lightblue;
 
 }
@@ -193,7 +201,7 @@ h6 {
 .login input {
     width: 400px;
     height: 50px;
-    
+
 }
 
 .image-container {
@@ -238,6 +246,7 @@ h6 {
     margin-left: 5px;
     margin-top: 20px;
 }
+
 .reg p {
     margin-top: 50px
 }
@@ -312,16 +321,16 @@ button[type="submit"]:hover {
     text-decoration: underline;
 }
 
- .card {
+.card {
     width: 200px;
     transform: 0.3s;
     display: inline-block;
     margin-bottom: 100px;
-    margin-right:5%;
+    margin-right: 5%;
     padding: 0%;
     margin-top: 10%;
 
-} 
+}
 
 .forms form {
     width: 250px;
@@ -594,86 +603,140 @@ button:hover {
     margin-left: 80px;
     font-size: large;
 }
-.selected-address-details p,h4{
+
+.selected-address-details p,
+h4 {
     display: inline;
-    font-size: large;  
-    font-family:Arial, Helvetica, sans-serif  
+    font-size: large;
+    font-family: Arial, Helvetica, sans-serif
 }
-.selected-address-details{
+
+.selected-address-details {
     margin-top: 30px;
-    margin-left:20%;
+    margin-left: 20%;
 }
+
 .ordersummary {
     display: flex;
     flex-direction: column;
-  }
-  
-  .table-centered {
+}
+
+.table-centered {
     margin-left: auto;
     margin-right: auto;
     width: 100%;
-    max-width: 1200px; 
-  }
-  .paid {
+    max-width: 1200px;
+}
+
+.paid {
     text-align: center;
     padding: 50px;
     background-color: #f8f9fa;
-  }
-  
-  .paid img {
+}
+
+.paid img {
     width: 150px;
     margin-bottom: 20px;
-  }
-  
-  .paid .bold {
+}
+
+.paid .bold {
     font-size: 1.2em;
     font-weight: bold;
     margin-bottom: 20px;
     color: #28a745;
-  }
-  
-  .paid a {
+}
+
+.paid a {
     display: inline-block;
     margin-top: 20px;
     padding: 10px 20px;
     font-size: 1em;
     color: #fff;
-    background-color:black;
+    background-color: black;
     border-radius: 5px;
     text-decoration: none;
     transition: background-color 0.3s ease;
-  }
-  
-  .paid a:hover {
-    background-color:grey;
-  }
-  .text-right a{
-    text-decoration:underline;
+}
+
+.paid a:hover {
+    background-color: grey;
+}
+
+.text-right a {
+    text-decoration: underline;
     margin-left: 50px;
-  }
- .btnback{
+}
+
+.btnback {
     margin-left: 800px;
     margin-top: 10px;
-    
- }
- .locontainers {
+
+}
+
+.locontainers {
     height: 1vh;
-  }
-  .login {
+}
+
+.login {
     max-width: 400px;
     width: 100%;
+}
+
+.payment-section h5 {
+    font-size: medium;
+    color: black;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+}
+
+.row h4 {
+    color: black;
+    font-size: medium;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+}
+.track {
+    text-align: center;
+    padding: 2rem;
+    background-color: #f8f9fa; 
+    border-radius: 8px; 
   }
   
- .payment-section h5{
+  .track h1 {
+    margin-bottom: 1rem;
+    color:grey;
+    font-size: large;
+  }
+  
+  .track h2 {
+    margin-bottom: 1.5rem;
+    color: #343a40; 
     font-size: medium;
-    color:black;
-    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
-
- }
- .row h4{
-    color:black;
+  }
+  
+  .tracknow {
+    background-color:cornsilk; 
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    margin-top: 1rem;
+  }
+  
+  .tracknow p {
+    margin-bottom: 0.5rem;
+    color:brown;
     font-size: medium;
-    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
-    
+    font-family: 'Times New Roman', Times, serif;
 
- }
+  }
+  
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px; 
+  }
+  .email-heading {
+    margin-top:2px;
+    border-bottom: 2px solid #ddd;
+    font-size: 1.2rem;
+    color:black
+  }
+  
